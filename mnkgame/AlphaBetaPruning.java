@@ -16,10 +16,10 @@ public class AlphaBetaPruning implements MNKPlayer {
         myWin   = first ? MNKGameState.WINP1 : MNKGameState.WINP2;
         yourWin = first ? MNKGameState.WINP2 : MNKGameState.WINP1;
         TIMEOUT = timeout_in_secs;
-        start   = System.currentTimeMillis();
     }
 
     public MNKCell selectCell(MNKCell[] FC, MNKCell[] MC) {
+        start   = System.currentTimeMillis();
         MNKCell ret_value = null;
         //System.out.println("FC.len = " + FC.length);
 
