@@ -12,11 +12,11 @@ public class MinimaxPlayer implements MNKPlayer {
     public MinimaxPlayer() {}
 
     public void initPlayer(int M, int N, int K, boolean first, int timeout_in_secs) {
-        B               = new MNKBoard(M,N,K);
-        myWin           = first ? MNKGameState.WINP1 : MNKGameState.WINP2;
-        yourWin         = first ? MNKGameState.WINP2 : MNKGameState.WINP1;
-        TIMEOUT         = timeout_in_secs;
-        start = System.currentTimeMillis();
+        B       = new MNKBoard(M,N,K);
+        myWin   = first ? MNKGameState.WINP1 : MNKGameState.WINP2;
+        yourWin = first ? MNKGameState.WINP2 : MNKGameState.WINP1;
+        TIMEOUT = timeout_in_secs;
+        start   = System.currentTimeMillis();
     }
  
     public MNKCell selectCell(MNKCell[] FC, MNKCell[] MC) {
