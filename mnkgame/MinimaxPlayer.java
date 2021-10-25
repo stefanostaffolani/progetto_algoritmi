@@ -6,8 +6,8 @@ public class MinimaxPlayer implements MNKPlayer {
     private MNKGameState myWin;
     private MNKGameState yourWin;
     private int TIMEOUT;
-    private boolean isMaximising;
-    
+    private long start;
+
 	// Default empty constructor
     public MinimaxPlayer() {}
 
@@ -16,10 +16,10 @@ public class MinimaxPlayer implements MNKPlayer {
         myWin           = first ? MNKGameState.WINP1 : MNKGameState.WINP2;
         yourWin         = first ? MNKGameState.WINP2 : MNKGameState.WINP1;
         TIMEOUT         = timeout_in_secs;
+        start = System.currentTimeMillis();
     }
  
     public MNKCell selectCell(MNKCell[] FC, MNKCell[] MC) {
-        
         MNKCell ret_value = null;
 
         //System.out.println("FC.len = " + FC.length);
@@ -51,7 +51,10 @@ public class MinimaxPlayer implements MNKPlayer {
     }
 
     public double minimax(boolean isMaximising){
-    
+        if((System.currentTimeMillis()-start)/1000.0 > TIMEOUT*(99.0/100.0)) 
+            return 0;
+            
+
         // check if tie
         if(B.getFreeCells().length == 0)
             return 0;
