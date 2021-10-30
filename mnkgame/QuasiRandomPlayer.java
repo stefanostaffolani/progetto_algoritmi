@@ -70,7 +70,7 @@ public class QuasiRandomPlayer implements MNKPlayer {
 		}
 
 		// If there is just one possible move, return immediately
-		if(FC.length == 1)
+		if(FC.length == 1) 
 			return FC[0];
 		
 		// Check whether there is single move win 

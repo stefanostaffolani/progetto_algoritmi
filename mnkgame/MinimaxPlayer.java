@@ -55,10 +55,6 @@ public class MinimaxPlayer implements MNKPlayer {
             return 0;
             
 
-        // check if tie
-        if(B.getFreeCells().length == 0)
-            return 0;
-
         // check if ther's a win
         MNKCell[] MC = B.getMarkedCells();
         MNKCell c = MC[MC.length-1];
@@ -71,9 +67,13 @@ public class MinimaxPlayer implements MNKPlayer {
                 return -10;
         }
 
+        // check if tie
+        if(B.getFreeCells().length == 0)
+            return 0;
+
         // search for the win
         if(isMaximising) { 
-            double bestScore = Double.POSITIVE_INFINITY * (-1);
+            double bestScore = Double.NEGATIVE_INFINITY;
             for(MNKCell d : B.getFreeCells()) {
                 B.markCell(d.i, d.j);
                 double score = minimax(false);
