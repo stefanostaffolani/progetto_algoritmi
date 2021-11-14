@@ -3,7 +3,6 @@
  * e mi serve come prova per implementare cose 
  */
 
-
 package mnkgame;
 
 public class tryHeuristicPlayer extends AlphaBetaPruning {
