@@ -1,21 +1,4 @@
-/**
- * Thoughts:
- *
- * "Find Kth largest ..." or "Find Kth smallest ..." which should remind you the
- * use of Quick Select algorithm, which is good for find kth smallest/largest
- * element in the unsorted (of course, it also works for sorted) array.
- * NOTE: Here we can simply treat 2D matrix as 1D array by convert row, col index into
- * corresponding 1D index
- *
- * Disadvantage for this problem: it does not fully utilize the property that the
- * matrix is sorted in both rows and cols. In addition, in worst case
- * quick select could have quadratic running time.
- *
- * Time: O(N = n^2) where n = number of rows/cols in average case, O(N^2 = n^4) in worst case
- *
- * Space: O(1)
- *
- */
+
 package mnkgame;
 
 class QuickSelect {
