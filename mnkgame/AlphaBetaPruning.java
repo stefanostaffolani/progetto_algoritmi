@@ -32,9 +32,8 @@ public class AlphaBetaPruning implements MNKPlayer {
 
         double bestScore = Double.NEGATIVE_INFINITY;
         for(MNKCell d : FC) {
-            System.out.println("pos ij = " + d.i + "," + d.j);
             B.markCell(d.i, d.j);
-            double score = alphaBeta(false, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+            double score = alphaBeta(false, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, 30);
             B.unmarkCell();
             if(score > bestScore){
                 bestScore = score;
@@ -50,11 +49,12 @@ public class AlphaBetaPruning implements MNKPlayer {
         return "abPruning_player";
     }
 
-    public double alphaBeta(boolean isMaximising, double a, double b){
-        if((System.currentTimeMillis()-start)/1000.0 > TIMEOUT*(99.0/100.0)) 
+    public double alphaBeta(boolean isMaximising, double a, double b, int depth){
+        // if it runs out of time or depth is 0 return 0
+        if((System.currentTimeMillis()-start)/1000.0 > TIMEOUT*(99.0/100.0) || depth == 0) 
             return 0;
             
-        // check if there's a win
+        // check if there's a win ----------------------------------
         MNKCell[] MC = B.getMarkedCells();
         MNKCell c = MC[MC.length-1];
         B.unmarkCell();
@@ -64,18 +64,22 @@ public class AlphaBetaPruning implements MNKPlayer {
             B.unmarkCell();
             if(B.markCell(c.i, c.j) == yourWin)
                 return -10;
-        }
+        } // -------------------------------------------------------
 
-        // check if draw
+
+        // check if draw -------------------------------------------
         if(B.getFreeCells().length == 0)
             return 0;
+        // ---------------------------------------------------------
 
-        // search for the win
+
+
+        // search for the win --------------------------------------
         if(isMaximising) { 
             double bestScore = Double.NEGATIVE_INFINITY;
             for(MNKCell d : B.getFreeCells()) {
                 B.markCell(d.i, d.j);
-                double score = alphaBeta(false, a, b);
+                double score = alphaBeta(false, a, b, depth-1);
                 B.unmarkCell();
                 bestScore = max(score, bestScore);
                 a = max(a, bestScore);
@@ -87,15 +91,14 @@ public class AlphaBetaPruning implements MNKPlayer {
             double bestScore = Double.POSITIVE_INFINITY;
             for(MNKCell d : B.getFreeCells()) {
                 B.markCell(d.i, d.j);
-                double score = alphaBeta(true, a, b);
+                double score = alphaBeta(true, a, b, depth-1);
                 B.unmarkCell();
                 bestScore = min(score, bestScore);
                 b = min(b, bestScore);
                 if(b <= a) break;
             }
             return bestScore;
-        }
-        
+        } // --------------------------------------------------------
     }
 
     public double max(double a, double b) { if(a > b) return a; else return b; }
