@@ -199,7 +199,7 @@ public class MNKBoard {
 	}
 
 	/**
-	 * Returns the free cells list in array format.
+	 * Returns the free cells list in arrayFC format.
 	 * <p>There is not a predefined order for the free cells in the array</p>
 	 * @return List of free cells
 	 */

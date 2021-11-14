@@ -2,11 +2,11 @@ package mnkgame;
 
 public class AlphaBetaPruning implements MNKPlayer {
     
-    private MNKBoard B;
-    private MNKGameState myWin;
-    private MNKGameState yourWin;
-    private int TIMEOUT;
-    private long start;
+    public MNKBoard B;
+    public MNKGameState myWin;
+    public MNKGameState yourWin; 
+    public int TIMEOUT;
+    public long start;
 
     // Default empty constructor
     public AlphaBetaPruning() {}
@@ -30,10 +30,11 @@ public class AlphaBetaPruning implements MNKPlayer {
 
         //System.out.println("B.FC.len = " + B.getFreeCells().length);
 
-        double bestScore = Double.POSITIVE_INFINITY*(-1);
+        double bestScore = Double.NEGATIVE_INFINITY;
         for(MNKCell d : FC) {
+            System.out.println("pos ij = " + d.i + "," + d.j);
             B.markCell(d.i, d.j);
-            double score = alphaBeta(false, Double.POSITIVE_INFINITY * (-1), Double.POSITIVE_INFINITY);
+            double score = alphaBeta(false, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
             B.unmarkCell();
             if(score > bestScore){
                 bestScore = score;
@@ -53,11 +54,7 @@ public class AlphaBetaPruning implements MNKPlayer {
         if((System.currentTimeMillis()-start)/1000.0 > TIMEOUT*(99.0/100.0)) 
             return 0;
             
-        // check if tie
-        if(B.getFreeCells().length == 0)
-            return 0;
-
-        // check if ther's a win
+        // check if there's a win
         MNKCell[] MC = B.getMarkedCells();
         MNKCell c = MC[MC.length-1];
         B.unmarkCell();
@@ -69,9 +66,13 @@ public class AlphaBetaPruning implements MNKPlayer {
                 return -10;
         }
 
+        // check if draw
+        if(B.getFreeCells().length == 0)
+            return 0;
+
         // search for the win
         if(isMaximising) { 
-            double bestScore = Double.POSITIVE_INFINITY * (-1);
+            double bestScore = Double.NEGATIVE_INFINITY;
             for(MNKCell d : B.getFreeCells()) {
                 B.markCell(d.i, d.j);
                 double score = alphaBeta(false, a, b);
