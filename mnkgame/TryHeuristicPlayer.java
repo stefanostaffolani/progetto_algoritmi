@@ -3,7 +3,7 @@
  * e mi serve come prova per implementare cose 
  */
 
-package mnkgame;
+package mnkgame; 
 
 public class TryHeuristicPlayer implements MNKPlayer{
 
