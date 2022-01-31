@@ -1,7 +1,7 @@
 package mnkgame;
 
 public class AlphaBetaPruning implements MNKPlayer {
-    
+     
     public MNKBoard B;
     public MNKGameState myWin;
     public MNKGameState yourWin; 
