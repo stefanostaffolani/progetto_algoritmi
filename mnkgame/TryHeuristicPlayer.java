@@ -21,6 +21,8 @@ public class TryHeuristicPlayer implements MNKPlayer{
     // HeuristicMatrix
     public HeuValue[][] matrix;
 
+    TranspositionTable table;
+
     // copy of M N 
     public int m;
     public int n;
@@ -38,6 +40,9 @@ public class TryHeuristicPlayer implements MNKPlayer{
 
         m       = M;
         n       = N;
+
+        table   = new TranspositionTable(m,n);
+
         matrix  = new HeuValue[m][n];
     }
 
@@ -45,37 +50,55 @@ public class TryHeuristicPlayer implements MNKPlayer{
         start   = System.currentTimeMillis();
         
         MNKCell ret_value = null;           // ret_value store the value to return and it's updated during the execution 
+        int score = Integer.MIN_VALUE;
 
         if(MC.length > 0) {
             MNKCell c = MC[MC.length-1];    // Recover the last move from MC
             B.markCell(c.i,c.j);            // Save the last move in the local MNKBoard
         }
+        HeuValue tab_val = table.get_val(MC);
+        if(tab_val.val > Integer.MIN_VALUE){
+            B.markCell(tab_val.i, tab_val.j);
+            return  new MNKCell(tab_val.i, tab_val.j);
+        }   // dovrebbe essere ok qui
 
         //List<HeuValue> list = new ArrayList<HeuValue>();
-        double bestScore = Double.NEGATIVE_INFINITY;
+        int bestScore = Integer.MIN_VALUE;
         init_matrix(MC);  // 0 if it is a free cell -1 if P1, -2 if P2
         MaxHeap max_heap = new MaxHeap(matrix, m, n);
 
         // ciclo di analisi mosse, termina quando termina il tempo per selectCell 
-        while((System.currentTimeMillis()-start)/1000.0 <= TIMEOUT*(99.0/100.0) && max_heap.last > 0){
+        while((System.currentTimeMillis()-start)/1000.0 <= TIMEOUT*(99.0/100.0) && max_heap.last > 0 && score <= 0){
             HeuValue e = max_heap.extract_max();
 
             if(e.val != -1 && e.val != -2){
                 B.markCell(e.i, e.j);
-                update_matrix(e, true);
-
-                double score = alphaBeta(false, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, 10);
                 
-                B.unmarkCell();
-                update_matrix(e, false);
-
-                if(score > bestScore){
-                    bestScore = score;
-                    ret_value = new MNKCell(e.i, e.j);
+                tab_val = table.get_val(MC);
+                if(tab_val.val > Integer.MIN_VALUE){
+                    if(tab_val.val == 10){
+                        return new MNKCell(tab_val.i, tab_val.j);
+                    }else{
+                        if(score > bestScore){
+                            bestScore = score;
+                            ret_value = new MNKCell(e.i, e.j);
+                        }
+                    }
+                }
+                else{
+                    update_matrix(e, true);
+                    score = alphaBeta(false, Integer.MIN_VALUE, Integer.MAX_VALUE, 30);
+                    update_matrix(e, false);
+                    e.val = score;
+                    table.add2tab(MC, e);
+                    B.unmarkCell();
+                    if(score > bestScore){
+                        bestScore = score;
+                        ret_value = new MNKCell(e.i, e.j);
+                    }
                 }
             }
         } 
-
         B.markCell(ret_value.i, ret_value.j);
         return ret_value;
     }
@@ -86,7 +109,7 @@ public class TryHeuristicPlayer implements MNKPlayer{
             for(int j = 0; j < n; j++){
                 matrix[i][j] = new HeuValue(i, j);
                 if(B.B[i][j] == MNKCellState.FREE)
-                    matrix[i][j].val = 0;
+                    matrix[i][j].val = 1;
                 else if(B.B[i][j] == MNKCellState.P1)
                     matrix[i][j].val = -1;
                 else if(B.B[i][j] == MNKCellState.P2)
@@ -164,7 +187,7 @@ public class TryHeuristicPlayer implements MNKPlayer{
         return "abPruning_player";
     }
 
-    public double alphaBeta(boolean isMaximising, double a, double b, int depth){
+    public int alphaBeta(boolean isMaximising, int a, int b, int depth){
         
         MNKCell[] MC = B.getMarkedCells();
         MNKCell c = MC[MC.length-1];
@@ -198,58 +221,91 @@ public class TryHeuristicPlayer implements MNKPlayer{
 
         // search for the win 
         if(isMaximising) { 
-            double bestScore = Double.NEGATIVE_INFINITY;
-            while(k < 5 && max_heap.last > 0){
+            int bestScore = Integer.MIN_VALUE;
+            while(k < 8 && max_heap.last > 0){
                 HeuValue e = max_heap.extract_max();
-
                 if(e.val != -1 && e.val != -2){
 
                     B.markCell(e.i, e.j);
-                    update_matrix(e, true);
 
-                    double score = alphaBeta(false, a, b, depth-1);
-                    
-                    B.unmarkCell();
-                    update_matrix(e, false);
-
-                    bestScore = max(score, bestScore);
-                    a = max(a, bestScore);
-                    if(b <= a) break;
+                    HeuValue tab_val = table.get_val(MC);
+                    if(tab_val.val > Integer.MIN_VALUE){  //fare prove!!!
+                        B.unmarkCell();
+                        if(tab_val.val == 10){//vinco
+                            return 10;
+                        }else{
+                            if(bestScore < tab_val.val){
+                                bestScore = tab_val.val;
+                            }
+                        }
+                    }
+                    //vedere se serve B.unmark()
+                    else{
+                        update_matrix(e, true);
+                        int score = alphaBeta(false, a, b, depth-1);
+                        update_matrix(e, false);
+                        e.val = score;
+                        if(depth > 15){   // aggiungo alla table se ho fatto almeno 15 step in depth
+                            table.add2tab(MC, e);
+                        }
+                        if(score > bestScore){
+                            bestScore = score;
+                        }
+                        a = max(a, bestScore);
+                        B.unmarkCell();
+                        if(b <= a) break;
+                    }
                 }
-
                 k++;
             } 
             return bestScore;
         }
         else {
-            double bestScore = Double.POSITIVE_INFINITY;
+            int bestScore = Integer.MAX_VALUE;
             
-            while(k < 5 && max_heap.last > 0){
+            while(k < 8 && max_heap.last > 0){
                 HeuValue e = max_heap.extract_max();
-
                 if(e.val != -1 && e.val != -2){
-                    
+
                     B.markCell(e.i, e.j);
-                    update_matrix(e, true);
 
-                    double score = alphaBeta(true, a, b, depth-1);
-                    
-                    B.unmarkCell();
-                    update_matrix(e, false);
+                    HeuValue tab_val = table.get_val(MC);
+                    if(tab_val.val > Integer.MIN_VALUE){  //fare prove!!!
+                        B.unmarkCell();
+                        if(tab_val.val == -10){//perdo
+                            return -10;
+                        }else{
+                            if(bestScore < tab_val.val){
+                                bestScore = tab_val.val;
+                            }
+                        }
+                    }
+                    //vedere se serve B.unmark()
+                    else{
+                        update_matrix(e, true);
+                        int score = alphaBeta(false, a, b, depth-1);
+                        update_matrix(e, false);
+                        e.val = score;
+                        if(depth > 15){   // aggiungo alla table se ho fatto almeno 15 step in depth
+                            table.add2tab(MC, e);
+                        }
+                        if(score < bestScore){
+                            bestScore = score;
+                        }
+                        b = min(b, bestScore);
+                        B.unmarkCell();
+                        if(b <= a) break;
 
-                    bestScore = min(score, bestScore);
-                    b = min(b, bestScore);
-                    if(b <= a) break;
-                }
+                    }
                 k++;
+                }
             }
-            return bestScore;
-        } 
-        
+            return bestScore; 
+        }
     }
 
-    public double max(double a, double b) { if(a > b) return a; else return b; }
-    public double min(double a, double b) { if(a < b) return a; else return b; }
+    public int max(int a, int b) { if(a > b) return a; else return b; }
+    public int min(int a, int b) { if(a < b) return a; else return b; }
 
 
     // for debugging 

@@ -24,10 +24,9 @@ public class MaxHeap {
         HeuValue tmp = array[1];
         array[1] = array[last];
         array[last] = tmp;
-        System.out.println(last);
-        fix_heap(1);
         last--;
-
+        //System.out.println(last);
+        fix_heap(1);
         return tmp;
     }
 
@@ -53,6 +52,7 @@ public class MaxHeap {
 
     public void print(){
         for(int i = 1; i < last+1; i++)
-            System.out.print(array[i] + "\t");
+            System.out.print(array[i].val + "\t");
+        System.out.println();
     }
 }

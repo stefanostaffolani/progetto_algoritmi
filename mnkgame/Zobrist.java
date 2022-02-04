@@ -3,23 +3,40 @@ package mnkgame;
 import java.util.Random;
 
 public class Zobrist{
-    public static int[][][] table = new int[10][10][2];
-    static Random rand = new Random();
-    static long MAX_VAL = 1024*1024; //20 bits
+    int[][][] table;
+    Random rand;
+    int MAX_VAL;
+    //Hashtable <Integer, Integer> transposition_table;
 
+    Zobrist(int m, int n){
+        table =  new int[m][n][2];
+        //transposition_table = new Hashtable<>(m*n);
+        rand = new Random();
+        MAX_VAL = 1024*1024;   // verificare se considera 20 bit...
+        init_zobrist(m, n);
+    }
 
-    public static void init_zobrist(int M, int N){
+    public void init_zobrist(int M, int N){
         for(int i = 0; i < M; i++){
             for(int j = 0; j < N; j++){
 		//System.out.println(i + j);
-                table[i][j][0] = rand.nextInt();
-                table[i][j][1] = rand.nextInt();
+                table[i][j][0] = rand.nextInt(MAX_VAL);
+                table[i][j][1] = rand.nextInt(MAX_VAL);
             }
         }
     }
 
-    public static long hash(MNKCell[] MC){
-        long h = 0;
+    //public void add2tab(int h, int n){
+    //    transposition_table.put(h, n);
+    //}
+
+    //public void print_transposition_table(){
+    //    System.out.println(transposition_table);
+    //    System.out.println(transposition_table.size());
+    //}
+
+    public int hash(MNKCell[] MC){
+        int h = 0;
         for(MNKCell d : MC){
             if(d.state == MNKCellState.P1){
                 h ^= table[d.i][d.j][0];
@@ -31,14 +48,14 @@ public class Zobrist{
         return h;
     }
 
-    public static void main(String[] args){
-        init_zobrist(10,10);
-	//System.out.println(rand.nextLong());
-        for(int i = 0; i < table.length; i++){
-            for(int j = 0; j < table.length; j++){
-                System.out.println(table[i][j][0] + "   "  + table[i][j][1] + '\n');
-            }
+    /*public static void main(String[] args){
+        Zobrist zobrist = new Zobrist(3, 3);
+        zobrist.init_zobrist(3, 3);
+        for(int i = 0; i < 15; i++){
+            zobrist.add2tab(i, i*i);
         }
-    }
+        zobrist.print_transposition_table();
+    }*/
+    
 }
 

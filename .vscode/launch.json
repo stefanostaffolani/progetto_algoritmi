@@ -4,7 +4,20 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-
+        {
+            "type": "java",
+            "name": "Launch Zobrist",
+            "request": "launch",
+            "mainClass": "mnkgame.Zobrist",
+            "projectName": "progetto_algoritmi_42a27ab6"
+        },
+        {
+            "type": "java",
+            "name": "Launch MNKGame",
+            "request": "launch",
+            "mainClass": "mnkgame.MNKGame",
+            "projectName": "progetto_algoritmi_42a27ab6"
+        },
         {
             "type": "java",
             "name": "Launch Current File",
@@ -17,7 +30,7 @@
             "request": "launch",
             "mainClass": "mnkgame.MNKGame",
             "projectName": "progetto_algoritmi_6701080f",
-            "args": "4 3 3 mnkgame.TryHeuristicPlayer"
+            "args": "3 3 3 mnkgame.TryHeuristicPlayer"
         },
         {
             "type": "java",
