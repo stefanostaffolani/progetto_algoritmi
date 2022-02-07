@@ -26,6 +26,9 @@ class LinearProbingHashTable {
         maxSize = capacity;
         keys = new Integer[maxSize];
         vals = new HeuValue[maxSize];
+
+        for(int i = 0; i < maxSize; i++)
+            keys[i] = null;
     }
  
     // Method 1
@@ -65,7 +68,7 @@ class LinearProbingHashTable {
     // Function to get hash code of a given key
     private int hash(Integer key)
     {
-        return key % maxSize;
+        return key % maxSize; 
     }
  
     // Method 7
@@ -74,41 +77,47 @@ class LinearProbingHashTable {
     {
         int tmp = hash(key);
         int i = tmp;
- 
+        
         // Do-while loop
         // Do part for performing actions
         do {
-            if (keys[i] == Integer.MIN_VALUE) {
+            if (keys[i] == null || keys[i] == Integer.MIN_VALUE) {
                 keys[i] = key;
                 vals[i] = val;
                 currentSize++;
                 return;
             }
- 
-            if (keys[i].equals(key)) {
-                vals[i] = val;
-                return;
-            }
- 
+
+            // if (keys[i].equals(key)) {
+            //     vals[i] = val;
+            //     return;
+            // }
+
             i = (i + 1) % maxSize;
- 
-        }
- 
+
+        }  
+
         // Do-while loop
         // while part for condition check
         while (i != tmp);
+
+        
     }
  
     // Method 8
     // Function to get value for a given key
     public HeuValue get(Integer key)
     {
-        int i = hash(key);
-        while (keys[i] != Integer.MIN_VALUE) {
-            if (keys[i].equals(key))
+        int tmp = hash(key);
+        int i = tmp;
+
+        do{
+            // System.out.println(i);
+            if (keys[i] == key)
                 return vals[i];
             i = (i + 1) % maxSize;
-        }
+        }while(keys[i] != null && i != tmp);
+
         HeuValue schifo = new HeuValue(0,0);
         schifo.val = Integer.MIN_VALUE;
         return schifo;
@@ -150,8 +159,42 @@ class LinearProbingHashTable {
     {
         System.out.println("\nHash Table: ");
         for (int i = 0; i < maxSize; i++)
-            if (keys[i] != Integer.MIN_VALUE)
-                System.out.println(keys[i] + " " + vals[i]);
+            if (keys[i] != null || keys[i] != Integer.MIN_VALUE)
+                System.out.println(keys[i] + " " + vals[i].val);
         System.out.println();
     }
+
+    public static void main(String[] args) {
+        LinearProbingHashTable l1 = new LinearProbingHashTable(10);
+        
+        int n = 10;
+        int[] l_keys = new int[n];
+
+        System.out.println("stampo chiavi:");
+        for(int i = 0; i < n; i++){
+            HeuValue bruno = new HeuValue(0, 0);
+            bruno.val = i+3;
+            l_keys[i] = i*7+2;
+            System.out.print("\t"+l_keys[i]);
+            l1.insert(i*7+2, bruno);
+        }
+
+        System.out.println("");
+        l1.printHashTable();
+
+        // rimuovo cazzate
+        for(int i = 0; i < 10; i+=2){
+            l1.remove(l_keys[i]);
+            // HeuValue bruno = new HeuValue(0, 0);
+            // bruno.val = i+3;
+            // l1.insert(i*7+2, bruno);
+        }
+
+        System.out.println("");
+        l1.printHashTable();
+
+
+    }
+
+
 }
