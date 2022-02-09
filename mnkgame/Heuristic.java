@@ -6,14 +6,16 @@ public class Heuristic {
     MaxHeap max_heap;
     int k;
     int n;
+	int m;
     MNKBoard B;
 
-    Heuristic(HeuValue[][] mat, MaxHeap mh, int k, int n, MNKBoard B){
+    Heuristic(HeuValue[][] mat, MaxHeap mh, int k, int n, int m, MNKBoard B){
         this.matrix = mat;
         this.max_heap = mh;
         this.k = k;
         this.n = n;
-        this.B = B;
+		this.m = m;
+		this.B = B;
     }
 
     public void set_max_heap(MaxHeap mh){ max_heap = mh; }
@@ -34,12 +36,62 @@ public class Heuristic {
 			if(max_heap.array[i].val != -1 && max_heap.array[i].val != -2){
                 ret_sum += evaluate_row(p1, max_heap.array[i]);
 			    ret_sum += evaluate_column(p1, max_heap.array[i]);
-			    ret_sum += evaluate_diagonal(p1, max_heap.array[i]);
+			    ret_sum += evaluate_diagonal1(p1, max_heap.array[i]);
+				ret_sum += evaluate_diagonal2(p1, max_heap.array[i]);
             }
 		}
 		
 		return ret_sum;
 	
+	}
+
+	public int eval_the_single_pos(HeuValue e){
+		int ret_sum = e.val;
+		if(e.val != -2 && e.val != -1){
+			ret_sum += evaluate_row(-1, e);
+			ret_sum += evaluate_column(-1, e);
+			ret_sum += evaluate_diagonal1(-1, e);
+			ret_sum += evaluate_diagonal2(-1, e);
+		}
+		return ret_sum;
+	}
+
+
+	public int get_heuristic_value(boolean free_cell_1, boolean free_cell_2, int cont, int p1){
+		// se la mia serie di mosse è estendibile sia destra che a sinistra e arrivo a k-1 ho vinto
+		if(free_cell_1 && free_cell_2 && (cont + 1 == k-1)){
+			if(p1 == -1)
+				return 200;
+			else
+				return -200;
+		} 
+		
+		// se la mia serie di mosse è estendibile e arrivo a k-2 o k-1
+		if(free_cell_1 || free_cell_2){
+
+			if(cont + 1 == k-2){
+				if(p1 == -1)
+					return 15;
+				else
+					return -15;
+			}
+			else if(cont + 1 == k-1){
+				if(p1 == -1)
+					return 100;
+				else
+					return -100;	
+			}
+		
+		}
+
+		if(cont + 1 == k){
+			if(p1 == -1)
+				return 150;
+			else
+				return -150;
+		}	
+		// se la mia serie non è estendibile allora tutto a mucchio
+		return 0;
 	}
 
     public int evaluate_row(int p1, HeuValue e){
@@ -75,7 +127,7 @@ public class Heuristic {
 			//se finisco contro una casella avversaria
 			if(matrix[e.i][e.j+iter].val != p1 && B.B[e.i][e.j+iter] != MNKCellState.FREE) break;
 			
-			// se finisco contro una cella libera & non è ancora accaduto 
+			// se finisco contro una cella libera  
 			if(B.B[e.i][e.j+iter] == MNKCellState.FREE && !free_cell_2){
 				free_cell_2 = true;
 				break;
@@ -85,46 +137,145 @@ public class Heuristic {
 			iter += 1;
 		}
 		
-		// se la mia serie di mosse è estendibile sia destra che a sinistra e arrivo a k-1 ho vinto
-		if(free_cell_1 && free_cell_2 && (cont + 1 == k-2)){
-			if(p1 == -1)
-				return 100;
-			else
-				return -100;
-		} 
-		
-		// se la mia serie di mosse è estendibile e arrivo a k-2 o k-1
-		if(free_cell_1 || free_cell_2){
-
-			if(cont + 1 == k-2){
-				if(p1 == -1)
-					return 1;
-				else
-					return -1;
-			}
-			else if(cont + 1 == k-1){
-				if(p1 == -1)
-					return 10;
-				else
-					return -10;	
-			}
-		
-		}
-		
-		// se la mia serie non è estendibile allora tutto a mucchio
-		return 0;
+		return get_heuristic_value(free_cell_1, free_cell_2, cont, p1);
     }
 
     public int evaluate_column(int p1, HeuValue e){
-
-        return 0;
+		boolean free_cell_1 = false;	// controllo free_cell a sinistra
+		boolean free_cell_2 = false;	// controllo free_cell a destra
+		int cont = 0;
+		int iter = 1;
+	
+		// cont alto:
+		while(true){
+			//se sbatto contro il muro in alto
+			if(e.i - iter < 0) break;
+			
+			//se finisco contro una casella avversaria
+			if(matrix[e.i-iter][e.j].val != p1 && B.B[e.i-iter][e.j] != MNKCellState.FREE) break;
+			
+			// se finisco contro una cella libera & non è ancora accaduto 
+			if(B.B[e.i-iter][e.j] == MNKCellState.FREE && !free_cell_1){
+				free_cell_1 = true;
+				break;
+			}
+			
+			cont += 1;
+            iter += 1;
+		}
+		
+		// cont basso
+		iter = 1;
+		while(true){
+			//se sbatto contro il muro basso
+			if(e.i + iter > m-1) break;
+			
+			//se finisco contro una casella avversaria
+			if(matrix[e.i+iter][e.j].val != p1 && B.B[e.i+iter][e.j] != MNKCellState.FREE) break;
+			
+			// se finisco contro una cella libera & non è ancora accaduto 
+			if(B.B[e.i+iter][e.j] == MNKCellState.FREE && !free_cell_2){
+				free_cell_2 = true;
+				break;
+			}
+			
+			cont += 1;
+			iter += 1;
+		}
+		
+		return get_heuristic_value(free_cell_1, free_cell_2, cont, p1);
     }
 
-    public int evaluate_diagonal(int p1, HeuValue e){
-
-        return 0;
+    public int evaluate_diagonal1(int p1, HeuValue e){
+		boolean free_cell_1 = false;	// controllo free_cell a sinistra
+		boolean free_cell_2 = false;	// controllo free_cell a destra
+		int cont = 0;
+		int iter = 1;
+	
+		// cont in alto a destra:
+		while(true){
+			//se sbatto contro il muro in alto a destra
+			if(e.j + iter > n-1 || e.i - iter < 0) break;
+			
+			//se finisco contro una casella avversaria
+			if(matrix[e.i-iter][e.j+iter].val != p1 && B.B[e.i-iter][e.j+iter] != MNKCellState.FREE) break;
+			
+			// se finisco contro una cella libera & non è ancora accaduto 
+			if(B.B[e.i-iter][e.j+iter] == MNKCellState.FREE && !free_cell_1){
+				free_cell_1 = true;
+				break;
+			}
+			
+			cont += 1;
+            iter += 1;
+		}
+		
+		// cont right
+		iter = 1;
+		while(true){
+			//se sbatto contro il muro in basso a sinstra
+			if(e.j - iter < 0 || e.i + iter > m-1) break;
+			
+			//se finisco contro una casella avversaria
+			if(matrix[e.i+iter][e.j-iter].val != p1 && B.B[e.i+iter][e.j-iter] != MNKCellState.FREE) break;
+			
+			// se finisco contro una cella libera & non è ancora accaduto 
+			if(B.B[e.i+iter][e.j-iter] == MNKCellState.FREE && !free_cell_2){
+				free_cell_2 = true;
+				break;
+			}
+			
+			cont += 1;
+			iter += 1;
+		}
+		
+		return get_heuristic_value(free_cell_1, free_cell_2, cont, p1);
     }
 
-
+	public int evaluate_diagonal2(int p1, HeuValue e){
+		boolean free_cell_1 = false;	// controllo free_cell a sinistra
+		boolean free_cell_2 = false;	// controllo free_cell a destra
+		int cont = 0;
+		int iter = 1;
+	
+		// cont in alto a sinistra
+		while(true){
+			//se sbatto contro il muro in alto a sinistra
+			if(e.j - iter < 0 || e.i - iter < 0) break;
+			
+			//se finisco contro una casella avversaria
+			if(matrix[e.i-iter][e.j-iter].val != p1 && B.B[e.i-iter][e.j-iter] != MNKCellState.FREE) break;
+			
+			// se finisco contro una cella libera & non è ancora accaduto 
+			if(B.B[e.i-iter][e.j-iter] == MNKCellState.FREE && !free_cell_1){
+				free_cell_1 = true;
+				break;
+			}
+			
+			cont += 1;
+            iter += 1;
+		}
+		
+		// cont in basso a destra
+		iter = 1;
+		while(true){
+			//se sbatto contro il muro in basso a sinstra
+			if(e.j + iter > n-1 || e.i + iter > m-1) break;
+			
+			//se finisco contro una casella avversaria
+			if(matrix[e.i+iter][e.j+iter].val != p1 && B.B[e.i+iter][e.j+iter] != MNKCellState.FREE) break;
+			
+			// se finisco contro una cella libera & non è ancora accaduto 
+			if(B.B[e.i+iter][e.j+iter] == MNKCellState.FREE && !free_cell_2){
+				free_cell_2 = true;
+				break;
+			}
+			
+			cont += 1;
+			iter += 1;
+		}
+		
+		return get_heuristic_value(free_cell_1, free_cell_2, cont, p1);
+	}
 
 }

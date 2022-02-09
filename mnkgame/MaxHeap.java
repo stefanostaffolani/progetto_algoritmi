@@ -54,5 +54,9 @@ public class MaxHeap {
         for(int i = 1; i < last+1; i++)
             System.out.print(array[i].val + "\t");
         System.out.println();
+        for(int i = 1; i < last+1; i++)
+            System.out.print(array[i].i+", "+ array[i].j + "\t");
+        System.out.println();
+
     }
 }
