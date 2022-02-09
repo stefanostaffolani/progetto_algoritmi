@@ -70,6 +70,9 @@ public class TryHeuristicPlayer implements MNKPlayer{
         //List<HeuValue> list = new ArrayList<HeuValue>();
         int bestScore = Integer.MIN_VALUE;
         init_matrix(MC);  // 0 if it is a free cell -1 if P1, -2 if P2
+        if(MC.length == 0){
+            matrix[m/2][n/2].val = 1;
+        }
         MaxHeap max_heap = new MaxHeap(matrix, m, n);
         
         Heuristic heu = new Heuristic(matrix, max_heap, k, n, m, B);

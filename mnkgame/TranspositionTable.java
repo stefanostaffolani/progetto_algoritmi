@@ -9,7 +9,7 @@ public class TranspositionTable {
 
     TranspositionTable(int m, int n){
         zobrist = new Zobrist(m, n);
-        transposition_table = new LinearProbingHashTable((int) Math.pow((m*n),5));
+        transposition_table = new LinearProbingHashTable((int) Math.pow((m*n),2));
     }
 
     public void add2tab(MNKCell MC[], HeuValue positions){

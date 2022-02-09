@@ -5,7 +5,7 @@ RM = rm
 
 OPTIONS = -cp
 
-MNK = 15 15 5
+MNK = 6 6 4
 
 run:
 	$(JR) $(OPTIONS) ".." mnkgame.MNKGame $(MNK) mnkgame.TryHeuristicPlayer
