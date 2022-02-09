@@ -1,0 +1,130 @@
+package mnkgame;
+
+public class Heuristic {
+    
+    HeuValue[][] matrix;
+    MaxHeap max_heap;
+    int k;
+    int n;
+    MNKBoard B;
+
+    Heuristic(HeuValue[][] mat, MaxHeap mh, int k, int n, MNKBoard B){
+        this.matrix = mat;
+        this.max_heap = mh;
+        this.k = k;
+        this.n = n;
+        this.B = B;
+    }
+
+    public void set_max_heap(MaxHeap mh){ max_heap = mh; }
+    public void set_matrix(HeuValue[][] mat){ matrix = mat; }
+
+    public int evaluate(){
+		int A = eval_pos(-1);	// evaluate the pos for player 1
+		int B = eval_pos(-2);	// evaluate the pos for player 2
+        // System.out.println("A "+ A + ", B " + B);
+		return A+B;
+	}
+
+    public int eval_pos(int p1){
+	
+		int ret_sum = 0; // somma di valori da ritornare
+		
+		for (int i = 1; i < max_heap.last + 1; i++) {	// chiedere a ste se è giusto
+			if(max_heap.array[i].val != -1 && max_heap.array[i].val != -2){
+                ret_sum += evaluate_row(p1, max_heap.array[i]);
+			    ret_sum += evaluate_column(p1, max_heap.array[i]);
+			    ret_sum += evaluate_diagonal(p1, max_heap.array[i]);
+            }
+		}
+		
+		return ret_sum;
+	
+	}
+
+    public int evaluate_row(int p1, HeuValue e){
+        boolean free_cell_1 = false;	// controllo free_cell a sinistra
+		boolean free_cell_2 = false;	// controllo free_cell a destra
+		int cont = 0;
+		int iter = 1;
+	
+		// cont left:
+		while(true){
+			//se sbatto contro il muro a sinistra
+			if(e.j - iter < 0) break;
+			
+			//se finisco contro una casella avversaria
+			if(matrix[e.i][e.j-iter].val != p1 && B.B[e.i][e.j-iter] != MNKCellState.FREE) break;
+			
+			// se finisco contro una cella libera & non è ancora accaduto 
+			if(B.B[e.i][e.j-iter] == MNKCellState.FREE && !free_cell_1){
+				free_cell_1 = true;
+				break;
+			}
+			
+			cont += 1;
+            iter += 1;
+		}
+		
+		// cont right
+		iter = 1;
+		while(true){
+			//se sbatto contro il muro a sinistra
+			if(e.j + iter > n-1) break;
+			
+			//se finisco contro una casella avversaria
+			if(matrix[e.i][e.j+iter].val != p1 && B.B[e.i][e.j+iter] != MNKCellState.FREE) break;
+			
+			// se finisco contro una cella libera & non è ancora accaduto 
+			if(B.B[e.i][e.j+iter] == MNKCellState.FREE && !free_cell_2){
+				free_cell_2 = true;
+				break;
+			}
+			
+			cont += 1;
+			iter += 1;
+		}
+		
+		// se la mia serie di mosse è estendibile sia destra che a sinistra e arrivo a k-1 ho vinto
+		if(free_cell_1 && free_cell_2 && (cont + 1 == k-2)){
+			if(p1 == -1)
+				return 100;
+			else
+				return -100;
+		} 
+		
+		// se la mia serie di mosse è estendibile e arrivo a k-2 o k-1
+		if(free_cell_1 || free_cell_2){
+
+			if(cont + 1 == k-2){
+				if(p1 == -1)
+					return 1;
+				else
+					return -1;
+			}
+			else if(cont + 1 == k-1){
+				if(p1 == -1)
+					return 10;
+				else
+					return -10;	
+			}
+		
+		}
+		
+		// se la mia serie non è estendibile allora tutto a mucchio
+		return 0;
+    }
+
+    public int evaluate_column(int p1, HeuValue e){
+
+        return 0;
+    }
+
+    public int evaluate_diagonal(int p1, HeuValue e){
+
+        return 0;
+    }
+
+
+
+}

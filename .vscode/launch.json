@@ -11,13 +11,13 @@
             "mainClass": "mnkgame.Zobrist",
             "projectName": "progetto_algoritmi_42a27ab6"
         },
-        {
-            "type": "java",
-            "name": "Launch MNKGame",
-            "request": "launch",
-            "mainClass": "mnkgame.MNKGame",
-            "projectName": "progetto_algoritmi_42a27ab6"
-        },
+        // {
+        //     "type": "java",
+        //     "name": "Launch MNKGame",
+        //     "request": "launch",
+        //     "mainClass": "mnkgame.MNKGame",
+        //     "projectName": "progetto_algoritmi_42a27ab6"
+        // },
         {
             "type": "java",
             "name": "Launch Current File",

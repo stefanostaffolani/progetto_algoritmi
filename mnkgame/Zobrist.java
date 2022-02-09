@@ -45,17 +45,11 @@ public class Zobrist{
                 h ^= table[d.i][d.j][1];
             }
         }
+
+        // System.out.println(h);
+
         return h;
     }
-
-    /*public static void main(String[] args){
-        Zobrist zobrist = new Zobrist(3, 3);
-        zobrist.init_zobrist(3, 3);
-        for(int i = 0; i < 15; i++){
-            zobrist.add2tab(i, i*i);
-        }
-        zobrist.print_transposition_table();
-    }*/
     
 }
 

@@ -159,7 +159,7 @@ class LinearProbingHashTable {
     {
         System.out.println("\nHash Table: ");
         for (int i = 0; i < maxSize; i++)
-            if (keys[i] != null || keys[i] != Integer.MIN_VALUE)
+            if (keys[i] != null && keys[i] != Integer.MIN_VALUE)
                 System.out.println(keys[i] + " " + vals[i].val);
         System.out.println();
     }
