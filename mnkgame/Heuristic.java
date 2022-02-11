@@ -23,10 +23,10 @@ public class Heuristic {
     public void set_matrix(HeuValue[][] mat){ matrix = mat; }
 
     public int evaluate(boolean isMaximising){
-		if(isMaximising)
-			return eval_pos(-1);	// evaluate the pos for player 1
-		else
-			return eval_pos(-2);	// evaluate the pos for player 2
+		//if(isMaximising)
+			return eval_pos(-1) + eval_pos(-2);	// evaluate the pos for player 1
+		// else
+		// 	return eval_pos(-2);	// evaluate the pos for player 2
 	}
 
     public int eval_pos(int p1){

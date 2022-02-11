@@ -13,8 +13,10 @@ public class MaxHeap {
         this.n = n;
         array = new HeuValue[m*n+1];
         for(int i = 0; i < m; i++){
-            for(int j = 0; j < n; j++)
-                array[i*n+j+1] = matrix[i][j];
+            for(int j = 0; j < n; j++){
+                array[i*n+j+1] = new HeuValue(i, j);
+                array[i*n+j+1].val = matrix[i][j].val;
+            }
         }
         last = m*n;
         heapify(1);
