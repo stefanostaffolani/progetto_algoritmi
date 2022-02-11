@@ -116,7 +116,9 @@ class LinearProbingHashTable {
             if (keys[i] == key)
                 return vals[i];
             i = (i + 1) % maxSize;
+
         }while(keys[i] != null && i != tmp);
+
 
         HeuValue schifo = new HeuValue(0,0);
         schifo.val = Integer.MIN_VALUE;

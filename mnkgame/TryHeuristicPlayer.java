@@ -49,8 +49,8 @@ public class TryHeuristicPlayer implements MNKPlayer{
         table   = new TranspositionTable(m,n);
         matrix  = new HeuValue[m][n];
 
-        depth = 10;
-        if(depth >= 3)
+        depth = 30;
+        if(depth > 3)
             transp_depth = depth-1;
         else
             transp_depth = depth;
@@ -66,6 +66,12 @@ public class TryHeuristicPlayer implements MNKPlayer{
         MNKCell ret_value = new MNKCell(m/2,n/2);           // ret_value store the value to return and it's updated during the execution 
         int score = Integer.MIN_VALUE;
 
+        // l'ho spostato sopra nel caso esplodesse tutto
+        if(MC.length > 0) {
+            MNKCell c = MC[MC.length-1];    // Recover the last move from MC
+            B.markCell(c.i,c.j);            // Save the last move in the local MNKBoard
+        }
+
         if(MC.length == 0 && (m != 3 && n != 3 && k != 3)){
             B.markCell(ret_value.i, ret_value.j);
             return ret_value;
@@ -77,10 +83,6 @@ public class TryHeuristicPlayer implements MNKPlayer{
             return ret_value;
         }
 
-        if(MC.length > 0) {
-            MNKCell c = MC[MC.length-1];    // Recover the last move from MC
-            B.markCell(c.i,c.j);            // Save the last move in the local MNKBoard
-        }
         
         HeuValue tab_val = table.get_val(B.getMarkedCells());
         if(tab_val.val > Integer.MIN_VALUE){
@@ -106,15 +108,15 @@ public class TryHeuristicPlayer implements MNKPlayer{
             }
         }
 
-        // max_heap.print();
+        //max_heap.print();
         max_heap.heapify(1);
         // max_heap.print();
 
         int i = 1;
         // ciclo di analisi mosse, termina quando termina il tempo per selectCell 
-        while((System.currentTimeMillis()-start)/1000.0 <= TIMEOUT*(99.0/100.0) && score <= 0 && i <= 5){
+        while((System.currentTimeMillis()-start)/1000.0 <= TIMEOUT*(99.0/100.0) && score <= 0 && i <= 8){
             HeuValue e = max_heap.array[i];
-
+            
             // if(e.i == 2 && e.j == 1)
             //     System.out.println(e.i +" "+ e.j);
             // if((e.i == 2 && e.j == 4)||(e.i == 5 && e.j == 1))
@@ -125,7 +127,6 @@ public class TryHeuristicPlayer implements MNKPlayer{
                 // System.out.println("valutazione " + cont + ":");
                 // System.out.println(e.i + ", " + e.j);
 
-
                 B.markCell(e.i, e.j);
                 update_matrix(e, true);
 
@@ -134,7 +135,7 @@ public class TryHeuristicPlayer implements MNKPlayer{
                 tab_val = table.get_val(B.getMarkedCells());
                 if(tab_val.val > Integer.MIN_VALUE){
                     // System.out.println("dio cane?");
-                    if(tab_val.val == 250){
+                    if(tab_val.val == 1000000){
                         return new MNKCell(tab_val.i, tab_val.j);
                     }else{
                         if(score > bestScore){
@@ -250,7 +251,7 @@ public class TryHeuristicPlayer implements MNKPlayer{
     }
 
     public int alphaBeta(boolean isMaximising, int a, int b, int depth){
-        
+
         MNKCell[] MC = B.getMarkedCells();
         MNKCell c = MC[MC.length-1];
         MaxHeap max_heap = new MaxHeap(matrix, m, n);
@@ -304,7 +305,8 @@ public class TryHeuristicPlayer implements MNKPlayer{
         // search for the win 
         if(isMaximising) { 
             int bestScore = Integer.MIN_VALUE;
-            while(i <= 3){
+            while(i <= 8){
+
                 HeuValue e = max_heap.array[i];
                 if(e.val != -1 && e.val != -2 && e.val != 0){
 
@@ -315,8 +317,8 @@ public class TryHeuristicPlayer implements MNKPlayer{
                     if(tab_val.val > Integer.MIN_VALUE){  //fare prove!!!
                         update_matrix(e, false);
                         B.unmarkCell();
-                        if(tab_val.val == 250){//vinco
-                            return 250;
+                        if(tab_val.val == 1000000){//vinco
+                            return 1000000;
                         }else{
                             if(bestScore < tab_val.val){
                                 bestScore = tab_val.val;
@@ -346,8 +348,9 @@ public class TryHeuristicPlayer implements MNKPlayer{
         }
         else {
             int bestScore = Integer.MAX_VALUE;
-            
-            while(i <= 3){
+
+            while(i <= 8){
+
                 HeuValue e = max_heap.array[i];
                 if(e.val != -1 && e.val != -2 && e.val != 0){
 
@@ -359,8 +362,8 @@ public class TryHeuristicPlayer implements MNKPlayer{
                         update_matrix(e, false);
                         B.unmarkCell();
 
-                        if(tab_val.val == -250){//perdo
-                            return -250;
+                        if(tab_val.val == -1000000){//perdo
+                            return -1000000;
                         }else{
                             if(bestScore < tab_val.val){
                                 bestScore = tab_val.val;
@@ -384,9 +387,10 @@ public class TryHeuristicPlayer implements MNKPlayer{
                         if(b <= a) break;
 
                     }
-                    i++;
                 }
+                i++;
             }
+
             return bestScore; 
         }
     }

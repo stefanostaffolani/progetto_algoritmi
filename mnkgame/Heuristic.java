@@ -32,7 +32,8 @@ public class Heuristic {
     public int eval_pos(int p1){
 	
 		int ret_sum = 0; // somma di valori da ritornare
-		
+		if(k <= 3) return 0;
+
 		for (int i = 1; i < max_heap.last + 1; i++) {	// chiedere a ste se è giusto
 			if(max_heap.array[i].val != -1 && max_heap.array[i].val != -2){
                 ret_sum += evaluate_row(p1, max_heap.array[i]);
@@ -48,6 +49,7 @@ public class Heuristic {
 
 	public int eval_the_single_pos(HeuValue e, int p1){
 		int ret_sum = e.val;
+		if(k <= 3) return ret_sum;
 		if(e.val != -2 && e.val != -1){
 			ret_sum += evaluate_row(p1, e);
 			ret_sum += evaluate_column(p1, e);
@@ -108,7 +110,8 @@ public class Heuristic {
 		boolean free_cell_2 = false;	// controllo free_cell a destra
 		int cont = 0;
 		int iter = 1;
-	
+		System.out.println("dio cane?");
+
 		// cont left:
 		while(true){
 			//se sbatto contro il muro a sinistra

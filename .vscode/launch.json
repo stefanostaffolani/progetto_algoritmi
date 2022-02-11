@@ -30,7 +30,7 @@
             "request": "launch",
             "mainClass": "mnkgame.MNKGame",
             "projectName": "progetto_algoritmi_6701080f",
-            "args": "6 6 4 mnkgame.TryHeuristicPlayer"
+            "args": "3 3 3 mnkgame.TryHeuristicPlayer"
         },
         {
             "type": "java",
