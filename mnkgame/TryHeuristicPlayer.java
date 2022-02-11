@@ -49,11 +49,13 @@ public class TryHeuristicPlayer implements MNKPlayer{
         table   = new TranspositionTable(m,n);
         matrix  = new HeuValue[m][n];
 
-        depth = 5;
+        depth = 10;
         if(depth >= 3)
             transp_depth = depth-1;
         else
             transp_depth = depth;
+
+        // System.out.println(Integer.MIN_VALUE);
     }
 
     public MNKCell selectCell(MNKCell[] FC, MNKCell[] MC) {
@@ -156,7 +158,7 @@ public class TryHeuristicPlayer implements MNKPlayer{
                 B.unmarkCell();
             }
             i++;
-            printMatrix();
+            // printMatrix();
 
         } 
         B.markCell(ret_value.i, ret_value.j);
@@ -272,11 +274,11 @@ public class TryHeuristicPlayer implements MNKPlayer{
         // MNKCell c = MC[MC.length-1];
         B.unmarkCell();
         if(B.markCell(c.i, c.j) == myWin)
-            return Integer.MAX_VALUE;
+            return 1000000;
         else{
             B.unmarkCell();
             if(B.markCell(c.i, c.j) == yourWin)
-                return Integer.MIN_VALUE+1;
+                return -1000000;
         } 
 
 
@@ -346,7 +348,7 @@ public class TryHeuristicPlayer implements MNKPlayer{
             int bestScore = Integer.MAX_VALUE;
             
             while(i <= 3){
-                HeuValue e = max_heap.extract_max();
+                HeuValue e = max_heap.array[i];
                 if(e.val != -1 && e.val != -2 && e.val != 0){
 
                     B.markCell(e.i, e.j);
