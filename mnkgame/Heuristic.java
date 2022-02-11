@@ -8,6 +8,7 @@ public class Heuristic {
     int n;
 	int m;
     MNKBoard B;
+	
 
     Heuristic(HeuValue[][] mat, MaxHeap mh, int k, int n, int m, MNKBoard B){
         this.matrix = mat;
@@ -21,11 +22,11 @@ public class Heuristic {
     public void set_max_heap(MaxHeap mh){ max_heap = mh; }
     public void set_matrix(HeuValue[][] mat){ matrix = mat; }
 
-    public int evaluate(){
-		int A = eval_pos(-1);	// evaluate the pos for player 1
-		int B = eval_pos(-2);	// evaluate the pos for player 2
-        // System.out.println("A "+ A + ", B " + B);
-		return A+B;
+    public int evaluate(boolean isMaximising){
+		if(isMaximising)
+			return eval_pos(-1);	// evaluate the pos for player 1
+		else
+			return eval_pos(-2);	// evaluate the pos for player 2
 	}
 
     public int eval_pos(int p1){
@@ -45,25 +46,39 @@ public class Heuristic {
 	
 	}
 
-	public int eval_the_single_pos(HeuValue e){
+	public int eval_the_single_pos(HeuValue e, int p1){
 		int ret_sum = e.val;
 		if(e.val != -2 && e.val != -1){
-			ret_sum += evaluate_row(-1, e);
-			ret_sum += evaluate_column(-1, e);
-			ret_sum += evaluate_diagonal1(-1, e);
-			ret_sum += evaluate_diagonal2(-1, e);
+			ret_sum += evaluate_row(p1, e);
+			ret_sum += evaluate_column(p1, e);
+			ret_sum += evaluate_diagonal1(p1, e);
+			ret_sum += evaluate_diagonal2(p1, e);
 		}
 		return ret_sum;
 	}
 
 
 	public int get_heuristic_value(boolean free_cell_1, boolean free_cell_2, int cont, int p1){
+		
+		if(cont + 1 == k){
+			if(p1 == -1)
+				return Integer.MAX_VALUE;
+			else
+				return Integer.MIN_VALUE+1;
+		}	
+		
 		// se la mia serie di mosse è estendibile sia destra che a sinistra e arrivo a k-1 ho vinto
 		if(free_cell_1 && free_cell_2 && (cont + 1 == k-1)){
 			if(p1 == -1)
-				return 200;
+				return 1000;
 			else
-				return -200;
+				return -1000;
+		} 
+		if(free_cell_1 && free_cell_2 && (cont + 1 == k-2)){
+			if(p1 == -1)
+				return 100;
+			else
+				return -100;
 		} 
 		
 		// se la mia serie di mosse è estendibile e arrivo a k-2 o k-1
@@ -71,25 +86,19 @@ public class Heuristic {
 
 			if(cont + 1 == k-2){
 				if(p1 == -1)
-					return 15;
+					return 20;
 				else
-					return -15;
+					return -20;
 			}
 			else if(cont + 1 == k-1){
 				if(p1 == -1)
-					return 100;
+					return 10000;
 				else
-					return -100;	
+					return -10000;	
 			}
 		
 		}
 
-		if(cont + 1 == k){
-			if(p1 == -1)
-				return 150;
-			else
-				return -150;
-		}	
 		// se la mia serie non è estendibile allora tutto a mucchio
 		return 0;
 	}
