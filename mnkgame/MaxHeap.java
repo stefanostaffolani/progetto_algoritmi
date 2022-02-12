@@ -7,18 +7,21 @@ public class MaxHeap {
     int last;
     int m;
     int n;
-
+    
     MaxHeap(HeuValue[][] matrix, int m, int n){
         this.m = m;
         this.n = n;
         array = new HeuValue[m*n+1];
+        last = 0;
         for(int i = 0; i < m; i++){
             for(int j = 0; j < n; j++){
-                array[i*n+j+1] = new HeuValue(i, j);
-                array[i*n+j+1].val = matrix[i][j].val;
+                if(matrix[i][j].val != 0 && matrix[i][j].val != -1 && matrix[i][j].val != -2){
+                    last++;
+                    array[last] = new HeuValue(i, j);
+                    array[last].val = matrix[i][j].val;
+                }
             }
         }
-        last = m*n;
         heapify(1);
     }
 

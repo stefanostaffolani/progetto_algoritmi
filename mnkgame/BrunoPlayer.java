@@ -1,5 +1,7 @@
 package mnkgame;
 
+import javax.lang.model.util.ElementScanner6;
+
 public class BrunoPlayer implements MNKPlayer{
     
     // a copy of the board
@@ -46,8 +48,23 @@ public class BrunoPlayer implements MNKPlayer{
         matrix  = new HeuValue[m][n];
 
         // set the depth...
-        iter_pruning = 4;
-        depth = 10;
+        if(m <= 4 && n <= 4){
+            iter_pruning = 9;
+            depth = 10;
+        }
+        else if(m <= 8 && n >= 8){
+            iter_pruning = 5;
+            depth = 8;
+        }
+        else if(m <= 20 && n <= 20){
+            iter_pruning = 5;
+            depth = 6;
+        }
+        else{
+            iter_pruning = 5;
+            depth = 5;
+        }
+
         if(depth > 3)
             transp_depth = depth-1;
         else
@@ -104,7 +121,6 @@ public class BrunoPlayer implements MNKPlayer{
         max_heap.heapify(1);
         // max_heap.print();
 
-        int i = 1;
         // ciclo di analisi mosse, termina quando termina il tempo per selectCell 
         while((System.currentTimeMillis()-start)/1000.0 <= TIMEOUT*(99.0/100.0) && max_heap.last >= 1){
             HeuValue e = max_heap.extract_max();
@@ -138,7 +154,6 @@ public class BrunoPlayer implements MNKPlayer{
                 update_matrix(e, false);
                 B.unmarkCell();
             }
-            i++;
         } 
         B.markCell(ret_value.i, ret_value.j);
         return ret_value;
