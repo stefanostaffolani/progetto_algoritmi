@@ -1,6 +1,7 @@
 package mnkgame;
 
 public class BrunoPlayer implements MNKPlayer{
+    
     // a copy of the board
     public MNKBoard B;
     
@@ -43,53 +44,50 @@ public class BrunoPlayer implements MNKPlayer{
         table   = new TranspositionTable(m,n);
         matrix  = new HeuValue[m][n];
 
+        // set the depth...
         depth = 10;
         if(depth > 3)
             transp_depth = depth-1;
         else
             transp_depth = depth;
-
-        // System.out.println(Integer.MIN_VALUE);
     }
 
     public MNKCell selectCell(MNKCell[] FC, MNKCell[] MC) {
         start   = System.currentTimeMillis();
         
-        // System.out.println(table.get_size());
-
-        MNKCell ret_value = new MNKCell(m/2,n/2);           // ret_value store the value to return and it's updated during the execution 
-        int score = Integer.MIN_VALUE;
-
-        // l'ho spostato sopra nel caso esplodesse tutto
         if(MC.length > 0) {
             MNKCell c = MC[MC.length-1];    // Recover the last move from MC
             B.markCell(c.i,c.j);            // Save the last move in the local MNKBoard
         }
 
+        MNKCell ret_value = new MNKCell(m/2,n/2);   // ret_value store the value to return and it's updated during the execution 
+
+        // if the game is not a 3x3 it returns the center as first move
         if(MC.length == 0 && (m != 3 && n != 3 && k != 3)){
             B.markCell(ret_value.i, ret_value.j);
             return ret_value;
-        }
+        } // if the game is a 3x3 it returns the corner as first move
         else if(MC.length == 0 && (m == 3 && n == 3 && k == 3)){
-            HeuValue bruno = new HeuValue(0,0);
-            ret_value = new MNKCell(bruno.i, bruno.j);
-            B.markCell(ret_value.i, ret_value.j);
+            ret_value = new MNKCell(0, 0);
+            B.markCell(0, 0);
             return ret_value;
         }
 
-        
+        // check if the position has been already evaluated
         HeuValue tab_val = table.get_val(B.getMarkedCells());
         if(tab_val.val > Integer.MIN_VALUE){
             B.markCell(tab_val.i, tab_val.j);
             return new MNKCell(tab_val.i, tab_val.j);
-        }   // dovrebbe essere ok qui
+        } 
 
-        //List<HeuValue> list = new ArrayList<HeuValue>();
+        int score = Integer.MIN_VALUE;
         int bestScore = Integer.MIN_VALUE;
+        
         init_matrix(MC);  // 0 if it is a free cell -1 if P1, -2 if P2
 
         MaxHeap max_heap = new MaxHeap(matrix, m, n);
         
+        // update the heap values applying heuristics
         Heuristic heu = new Heuristic(matrix, max_heap, k, n, m, B);
         for(int i = 1; i < max_heap.last+1; i++){
             if(max_heap.array[i].val != 0 && max_heap.array[i].val != -1 && max_heap.array[i].val != -2){
@@ -97,8 +95,6 @@ public class BrunoPlayer implements MNKPlayer{
                 int B = heu.eval_the_single_pos(max_heap.array[i], -2);
                 if(A != -1 && A != -2)
                     max_heap.array[i].val = A + Math.abs(B);
-                else
-                    max_heap.array[i].val = A;
             }
         }
 
@@ -111,24 +107,13 @@ public class BrunoPlayer implements MNKPlayer{
         while((System.currentTimeMillis()-start)/1000.0 <= TIMEOUT*(99.0/100.0) && score <= 0 && i <= 8){
             HeuValue e = max_heap.array[i];
             
-            // if(e.i == 2 && e.j == 1)
-            //     System.out.println(e.i +" "+ e.j);
-            // if((e.i == 2 && e.j == 4)||(e.i == 5 && e.j == 1))
-            //     System.out.println(e.i +" "+ e.j + ": ev= " + e.val);
-    
             if(e.val != -1 && e.val != -2 && e.val != 0){
-
-                // System.out.println("valutazione " + cont + ":");
-                // System.out.println(e.i + ", " + e.j);
 
                 B.markCell(e.i, e.j);
                 update_matrix(e, true);
 
-                // System.out.println(B.getMarkedCells());
-
                 tab_val = table.get_val(B.getMarkedCells());
                 if(tab_val.val > Integer.MIN_VALUE){
-                    // System.out.println("dio cane?");
                     if(tab_val.val == 1000000){
                         return new MNKCell(tab_val.i, tab_val.j);
                     }else{
@@ -140,7 +125,6 @@ public class BrunoPlayer implements MNKPlayer{
                 }
                 else{
                     score = alphaBeta(false, Integer.MIN_VALUE, Integer.MAX_VALUE, depth);
-                    // System.out.println("score = " + score);
                     HeuValue tmp = new HeuValue(0, 0);
                     tmp.val = score;
                     table.add2tab(B.getMarkedCells(), tmp);
@@ -153,8 +137,6 @@ public class BrunoPlayer implements MNKPlayer{
                 B.unmarkCell();
             }
             i++;
-            // printMatrix();
-
         } 
         B.markCell(ret_value.i, ret_value.j);
         return ret_value;
@@ -257,16 +239,12 @@ public class BrunoPlayer implements MNKPlayer{
                 int B = heu.eval_the_single_pos(max_heap.array[i], -2);
                 if(A != -1 && A != -2)
                     max_heap.array[i].val = A + Math.abs(B);
-                else
-                    max_heap.array[i].val = A;
             }
         }
         max_heap.heapify(1);
 
     
         // check if there's a win 
-        // MNKCell[] MC = B.getMarkedCells();
-        // MNKCell c = MC[MC.length-1];
         B.unmarkCell();
         if(B.markCell(c.i, c.j) == myWin)
             return 1000000;
@@ -285,16 +263,9 @@ public class BrunoPlayer implements MNKPlayer{
         // if it runs out of time or depth is 0 return 0
         if((System.currentTimeMillis()-start)/1000.0 > TIMEOUT*(99.0/100.0) || depth == 0) {
             Heuristic heu_board = new Heuristic(matrix, max_heap, k, n, m, B);
-            int bruno = heu_board.evaluate(isMaximising);
-            // System.out.println(bruno);
-            return bruno;
+            return heu_board.evaluate(isMaximising);
         }
         
-        // if(depth == 0){
-        //     Heuristic heu = new Heuristic(matrix, max_heap, k, n, B);
-        //     return heu.evaluate();
-        // }
-
         int i = 1;
         // search for the win 
         if(isMaximising) { 
@@ -327,9 +298,7 @@ public class BrunoPlayer implements MNKPlayer{
                         if(depth > transp_depth){   // aggiungo alla table se ho fatto almeno 15 step in depth
                             table.add2tab(B.getMarkedCells(), tmp);
                         }
-                        if(score > bestScore){
-                            bestScore = score;
-                        }
+                        bestScore = max(score, bestScore);
                         a = max(a, bestScore);
                         update_matrix(e, false);
                         B.unmarkCell();
@@ -372,14 +341,11 @@ public class BrunoPlayer implements MNKPlayer{
                         if(depth > transp_depth){   // aggiungo alla table se ho fatto almeno 15 step in depth
                             table.add2tab(B.getMarkedCells(), tmp);
                         }
-                        if(score < bestScore){
-                            bestScore = score;
-                        }
+                        bestScore = min(score, bestScore);
                         b = min(b, bestScore);
                         update_matrix(e, false);
                         B.unmarkCell();
                         if(b <= a) break;
-
                     }
                 }
                 i++;
