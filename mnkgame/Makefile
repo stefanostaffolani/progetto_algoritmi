@@ -7,13 +7,13 @@ OPTIONS = -cp
 
 MNK = 6 6 4
 
-run:
-	$(JR) $(OPTIONS) ".." mnkgame.MNKGame $(MNK) mnkgame.BrunoPlayer
-
 build: 
 	$(JC) $(OPTIONS) ".." *.java
 
 clean:
 	$(RM) -rf *.class
+
+run:
+	$(JR) $(OPTIONS) ".." mnkgame.MNKGame $(MNK) mnkgame.BrunoPlayer
 
 

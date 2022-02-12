@@ -25,6 +25,7 @@ public class BrunoPlayer implements MNKPlayer{
 
     public int depth;
     public int transp_depth;
+    public int iter_pruning;
 
     // Default empty constructor
     public BrunoPlayer() {}
@@ -45,6 +46,7 @@ public class BrunoPlayer implements MNKPlayer{
         matrix  = new HeuValue[m][n];
 
         // set the depth...
+        iter_pruning = 4;
         depth = 10;
         if(depth > 3)
             transp_depth = depth-1;
@@ -97,15 +99,15 @@ public class BrunoPlayer implements MNKPlayer{
                     max_heap.array[i].val = A + Math.abs(B);
             }
         }
-
+        // ste è intelligente
         //max_heap.print();
         max_heap.heapify(1);
         // max_heap.print();
 
         int i = 1;
         // ciclo di analisi mosse, termina quando termina il tempo per selectCell 
-        while((System.currentTimeMillis()-start)/1000.0 <= TIMEOUT*(99.0/100.0) && score <= 0 && i <= 8){
-            HeuValue e = max_heap.array[i];
+        while((System.currentTimeMillis()-start)/1000.0 <= TIMEOUT*(99.0/100.0) && max_heap.last >= 1){
+            HeuValue e = max_heap.extract_max();
             
             if(e.val != -1 && e.val != -2 && e.val != 0){
 
@@ -270,9 +272,9 @@ public class BrunoPlayer implements MNKPlayer{
         // search for the win 
         if(isMaximising) { 
             int bestScore = Integer.MIN_VALUE;
-            while(i <= 4){
+            while(i <= iter_pruning && max_heap.last >= 1){
 
-                HeuValue e = max_heap.array[i];
+                HeuValue e = max_heap.extract_max();
                 if(e.val != -1 && e.val != -2 && e.val != 0){
 
                     B.markCell(e.i, e.j);
@@ -312,9 +314,9 @@ public class BrunoPlayer implements MNKPlayer{
         else {
             int bestScore = Integer.MAX_VALUE;
 
-            while(i <= 4){
+            while(i <= iter_pruning && max_heap.last >= 1){
 
-                HeuValue e = max_heap.array[i];
+                HeuValue e = max_heap.extract_max();
                 if(e.val != -1 && e.val != -2 && e.val != 0){
 
                     B.markCell(e.i, e.j);
@@ -357,11 +359,6 @@ public class BrunoPlayer implements MNKPlayer{
 
     public int max(int a, int b) { if(a > b) return a; else return b; }
     public int min(int a, int b) { if(a < b) return a; else return b; }
-
-
-
-
-
 
     // for debugging 
     public void printMatrix(){

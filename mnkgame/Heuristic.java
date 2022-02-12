@@ -72,9 +72,9 @@ public class Heuristic {
 		// se la mia serie di mosse è estendibile sia destra che a sinistra e arrivo a k-1 ho vinto
 		if(free_cell_1 && free_cell_2 && (cont + 1 == k-1)){
 			if(p1 == -1)
-				return 100000;
+				return 10000;
 			else
-				return -100000;
+				return -10000;
 		} 
 		if(free_cell_1 && free_cell_2 && (cont + 1 == k-2)){
 			if(p1 == -1)
@@ -94,9 +94,9 @@ public class Heuristic {
 			}
 			else if(cont + 1 == k-1){
 				if(p1 == -1)
-					return 10000;
+					return 1000;
 				else
-					return -10000;	
+					return -1000;	
 			}
 		
 		}
