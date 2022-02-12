@@ -1,5 +1,7 @@
 package mnkgame;
 
+import java.util.Random;
+
 // Main class
 public class MaxHeap {
 
@@ -20,6 +22,22 @@ public class MaxHeap {
         }
         last = m*n;
         heapify(1);
+    }
+
+    public void heap_sort()
+    {
+        heapify(1);
+        // One by one extract an element from heap
+        for (int i=last-1; i>=0; i--)
+        {
+            // Move current root to end
+            int temp = array[0].val;
+            array[0].val = array[i].val;
+            array[i].val = temp;
+  
+            // call max heapify on the reduced heap
+            heapify(1);
+        }
     }
 
     public HeuValue extract_max(){
@@ -59,6 +77,27 @@ public class MaxHeap {
         // for(int i = 1; i < last+1; i++)
         //     System.out.print(array[i].i+", "+ array[i].j + "\t");
         System.out.println();
+
+    }
+
+    public static void main(String[] args) {
+        Random rand = new Random();
+        HeuValue[][] m = new HeuValue[4][4];
+        for(int i = 0; i < 4; i++){
+            for(int j = 0; j < 4; j++){
+                m[i][j] = new HeuValue(i, j);
+                m[i][j].val = rand.nextInt(100);
+                System.out.print(m[i][j].val + "\t");
+            }
+            System.out.println();
+        }
+
+        System.out.println("now i gonna put the element in a heap: ");
+        MaxHeap heap = new MaxHeap(m, 4, 4);
+        heap.print();
+        heap.heap_sort();
+        System.out.println("now i gonna sort the fucking element: ");
+        heap.print();
 
     }
 }

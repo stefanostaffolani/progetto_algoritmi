@@ -72,9 +72,9 @@ public class Heuristic {
 		// se la mia serie di mosse è estendibile sia destra che a sinistra e arrivo a k-1 ho vinto
 		if(free_cell_1 && free_cell_2 && (cont + 1 == k-1)){
 			if(p1 == -1)
-				return 10000;
+				return 100000;
 			else
-				return -10000;
+				return -100000;
 		} 
 		if(free_cell_1 && free_cell_2 && (cont + 1 == k-2)){
 			if(p1 == -1)
@@ -110,7 +110,7 @@ public class Heuristic {
 		boolean free_cell_2 = false;	// controllo free_cell a destra
 		int cont = 0;
 		int iter = 1;
-		System.out.println("dio cane?");
+		// System.out.println("dio cane?");
 
 		// cont left:
 		while(true){

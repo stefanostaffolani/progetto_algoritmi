@@ -1,12 +1,6 @@
-/* 
- * questo player è uno sfaso che funziona con base alpha_beta_pruning
- * e mi serve come prova per implementare cose 
- */
-
 package mnkgame;
 
-public class TryHeuristicPlayer implements MNKPlayer{
-
+public class BrunoPlayer implements MNKPlayer{
     // a copy of the board
     public MNKBoard B;
     
@@ -32,7 +26,7 @@ public class TryHeuristicPlayer implements MNKPlayer{
     public int transp_depth;
 
     // Default empty constructor
-    public TryHeuristicPlayer() {}
+    public BrunoPlayer() {}
 
     public void initPlayer(int M, int N, int K, boolean first, int timeout_in_secs) {
         B       = new MNKBoard(M,N,K);
@@ -49,7 +43,7 @@ public class TryHeuristicPlayer implements MNKPlayer{
         table   = new TranspositionTable(m,n);
         matrix  = new HeuValue[m][n];
 
-        depth = 30;
+        depth = 10;
         if(depth > 3)
             transp_depth = depth-1;
         else
@@ -305,7 +299,7 @@ public class TryHeuristicPlayer implements MNKPlayer{
         // search for the win 
         if(isMaximising) { 
             int bestScore = Integer.MIN_VALUE;
-            while(i <= 8){
+            while(i <= 4){
 
                 HeuValue e = max_heap.array[i];
                 if(e.val != -1 && e.val != -2 && e.val != 0){
@@ -349,7 +343,7 @@ public class TryHeuristicPlayer implements MNKPlayer{
         else {
             int bestScore = Integer.MAX_VALUE;
 
-            while(i <= 8){
+            while(i <= 4){
 
                 HeuValue e = max_heap.array[i];
                 if(e.val != -1 && e.val != -2 && e.val != 0){
@@ -412,5 +406,4 @@ public class TryHeuristicPlayer implements MNKPlayer{
             System.out.println();
         }
     }
-
 }

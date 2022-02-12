@@ -6,18 +6,18 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch MaxHeap",
+            "request": "launch",
+            "mainClass": "mnkgame.MaxHeap",
+            "projectName": "progetto_algoritmi_6701080f"
+        },
+        {
+            "type": "java",
             "name": "Launch Zobrist",
             "request": "launch",
             "mainClass": "mnkgame.Zobrist",
             "projectName": "progetto_algoritmi_42a27ab6"
         },
-        // {
-        //     "type": "java",
-        //     "name": "Launch MNKGame",
-        //     "request": "launch",
-        //     "mainClass": "mnkgame.MNKGame",
-        //     "projectName": "progetto_algoritmi_42a27ab6"
-        // },
         {
             "type": "java",
             "name": "Launch Current File",
