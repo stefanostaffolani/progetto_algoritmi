@@ -1,7 +1,5 @@
 package mnkgame;
 
-import javax.lang.model.util.ElementScanner6;
-
 public class BrunoPlayer implements MNKPlayer{
     
     // a copy of the board
@@ -49,15 +47,15 @@ public class BrunoPlayer implements MNKPlayer{
 
         // set the depth...
         if(m <= 4 && n <= 4){
-            iter_pruning = 9;
-            depth = 10;
+            iter_pruning = 15;
+            depth = 15;
         }
-        else if(m <= 8 && n >= 8){
-            iter_pruning = 5;
-            depth = 8;
+        else if(m <= 8 && n <= 8){
+            iter_pruning = 15;
+            depth = 15;
         }
         else if(m <= 20 && n <= 20){
-            iter_pruning = 5;
+            iter_pruning = 6;
             depth = 6;
         }
         else{
@@ -65,7 +63,12 @@ public class BrunoPlayer implements MNKPlayer{
             depth = 5;
         }
 
-        if(depth > 3)
+
+        if(depth > 10)
+            transp_depth = depth-5;
+        else if(depth > 5 && depth <= 10)
+            transp_depth = depth-2;
+        else if(depth > 3 && depth <= 5)
             transp_depth = depth-1;
         else
             transp_depth = depth;
@@ -73,7 +76,7 @@ public class BrunoPlayer implements MNKPlayer{
 
     public MNKCell selectCell(MNKCell[] FC, MNKCell[] MC) {
         start   = System.currentTimeMillis();
-        
+
         if(MC.length > 0) {
             MNKCell c = MC[MC.length-1];    // Recover the last move from MC
             B.markCell(c.i,c.j);            // Save the last move in the local MNKBoard
@@ -94,8 +97,13 @@ public class BrunoPlayer implements MNKPlayer{
 
         // check if the position has been already evaluated
         HeuValue tab_val = table.get_val(B.getMarkedCells());
+        //System.out.println(table.zobrist.hash(B.getMarkedCells()));
+        // System.out.println(tab_val.val);
         if(tab_val.val > Integer.MIN_VALUE){
-            B.markCell(tab_val.i, tab_val.j);
+            System.out.println("mi trovi?(1) " + tab_val.val + "\ni = " + tab_val.i + ", j = " + tab_val.j);
+            HeuValue tmp = new HeuValue(tab_val.i, tab_val.j);
+            table.remove_from_tab(B.getMarkedCells());
+            B.markCell(tmp.i, tmp.j);
             return new MNKCell(tab_val.i, tab_val.j);
         } 
 
@@ -112,49 +120,33 @@ public class BrunoPlayer implements MNKPlayer{
             if(max_heap.array[i].val != 0 && max_heap.array[i].val != -1 && max_heap.array[i].val != -2){
                 int A = heu.eval_the_single_pos(max_heap.array[i], -1);
                 int B = heu.eval_the_single_pos(max_heap.array[i], -2);
-                if(A != -1 && A != -2)
-                    max_heap.array[i].val = A + Math.abs(B);
+                max_heap.array[i].val = A + Math.abs(B);
             }
         }
         // ste è intelligente
         //max_heap.print();
         max_heap.heapify(1);
         // max_heap.print();
+        // table.transposition_table.printHashTable();
 
         // ciclo di analisi mosse, termina quando termina il tempo per selectCell 
         while((System.currentTimeMillis()-start)/1000.0 <= TIMEOUT*(99.0/100.0) && max_heap.last >= 1){
             HeuValue e = max_heap.extract_max();
             
-            if(e.val != -1 && e.val != -2 && e.val != 0){
+            B.markCell(e.i, e.j);
+            update_matrix(e, true);
 
-                B.markCell(e.i, e.j);
-                update_matrix(e, true);
+            score = alphaBeta(false, Integer.MIN_VALUE, Integer.MAX_VALUE, depth);
+        
+            update_matrix(e, false);
+            B.unmarkCell();
 
-                tab_val = table.get_val(B.getMarkedCells());
-                if(tab_val.val > Integer.MIN_VALUE){
-                    if(tab_val.val == 1000000){
-                        return new MNKCell(tab_val.i, tab_val.j);
-                    }else{
-                        if(score > bestScore){
-                            bestScore = score;
-                            ret_value = new MNKCell(e.i, e.j);
-                        }
-                    }
-                }
-                else{
-                    score = alphaBeta(false, Integer.MIN_VALUE, Integer.MAX_VALUE, depth);
-                    HeuValue tmp = new HeuValue(0, 0);
-                    tmp.val = score;
-                    table.add2tab(B.getMarkedCells(), tmp);
-                    if(score > bestScore){
-                        bestScore = score;
-                        ret_value = new MNKCell(e.i, e.j);
-                    }
-                }
-                update_matrix(e, false);
-                B.unmarkCell();
-            }
+            if(score > bestScore){
+                bestScore = score;
+                ret_value = new MNKCell(e.i, e.j);
+            }    
         } 
+
         B.markCell(ret_value.i, ret_value.j);
         return ret_value;
     }
@@ -249,13 +241,19 @@ public class BrunoPlayer implements MNKPlayer{
         MNKCell c = MC[MC.length-1];
         MaxHeap max_heap = new MaxHeap(matrix, m, n);
        
+        HeuValue tab_val = table.get_val(B.getMarkedCells());
+        if(tab_val.val > Integer.MIN_VALUE){  //fare prove!!!
+            System.out.println("mi trovi?(3.1) " + tab_val.val + "\ni = " + tab_val.i + ", j = " + tab_val.j);
+            
+            return tab_val.val;
+        }
+
         Heuristic heu = new Heuristic(matrix, max_heap, k, n, m, B);
         for(int i = 1; i < max_heap.last+1; i++){
             if(max_heap.array[i].val != 0 && max_heap.array[i].val != -1 && max_heap.array[i].val != -2){
                 int A = heu.eval_the_single_pos(max_heap.array[i], -1);
                 int B = heu.eval_the_single_pos(max_heap.array[i], -2);
-                if(A != -1 && A != -2)
-                    max_heap.array[i].val = A + Math.abs(B);
+                max_heap.array[i].val = A + Math.abs(B);
             }
         }
         max_heap.heapify(1);
@@ -284,90 +282,66 @@ public class BrunoPlayer implements MNKPlayer{
         }
         
         int i = 1;
+        HeuValue best_move = new HeuValue(0, 0);
         // search for the win 
         if(isMaximising) { 
             int bestScore = Integer.MIN_VALUE;
             while(i <= iter_pruning && max_heap.last >= 1){
 
                 HeuValue e = max_heap.extract_max();
-                if(e.val != -1 && e.val != -2 && e.val != 0){
-
-                    B.markCell(e.i, e.j);
-                    update_matrix(e, true);
-
-                    HeuValue tab_val = table.get_val(B.getMarkedCells());
-                    if(tab_val.val > Integer.MIN_VALUE){  //fare prove!!!
-                        update_matrix(e, false);
-                        B.unmarkCell();
-                        if(tab_val.val == 1000000){//vinco
-                            return 1000000;
-                        }else{
-                            if(bestScore < tab_val.val){
-                                bestScore = tab_val.val;
-                            }
-                        }
-                    }
-                    //vedere se serve B.unmark()
-                    else{
-                        int score = alphaBeta(false, a, b, depth-1);
-                        HeuValue tmp = new HeuValue(0, 0);
-                        tmp.val = score;
-                        if(depth > transp_depth){   // aggiungo alla table se ho fatto almeno 15 step in depth
-                            table.add2tab(B.getMarkedCells(), tmp);
-                        }
-                        bestScore = max(score, bestScore);
-                        a = max(a, bestScore);
-                        update_matrix(e, false);
-                        B.unmarkCell();
-                        if(b <= a) break;
-                    }
+                
+                B.markCell(e.i, e.j);
+                update_matrix(e, true);
+                int score = alphaBeta(false, a, b, depth-1);
+                update_matrix(e, false);
+                B.unmarkCell();
+                
+                if(score > bestScore){   // aggiungo alla table se ho fatto almeno 15 step in depth
+                    best_move.i = e.i;
+                    best_move.j = e.j;
+                    best_move.val = score;
                 }
+
+                bestScore = max(score, bestScore);
+                a = max(a, bestScore);
+
+                if(b <= a) break;
+            
                 i++;
             } 
+            if(depth > transp_depth){
+                table.add2tab(B.getMarkedCells(), best_move);
+            }
             return bestScore;
         }
         else {
             int bestScore = Integer.MAX_VALUE;
-
             while(i <= iter_pruning && max_heap.last >= 1){
 
                 HeuValue e = max_heap.extract_max();
-                if(e.val != -1 && e.val != -2 && e.val != 0){
+             
+                B.markCell(e.i, e.j);
+                update_matrix(e, true);
+                int score = alphaBeta(true, a, b, depth-1);
+                update_matrix(e, false);
+                B.unmarkCell();
 
-                    B.markCell(e.i, e.j);
-                    update_matrix(e, true);
-        
-                    HeuValue tab_val = table.get_val(B.getMarkedCells());
-                    if(tab_val.val > Integer.MIN_VALUE){  //fare prove!!!
-                        update_matrix(e, false);
-                        B.unmarkCell();
-
-                        if(tab_val.val == -1000000){//perdo
-                            return -1000000;
-                        }else{
-                            if(bestScore < tab_val.val){
-                                bestScore = tab_val.val;
-                            }
-                        }
-                    }
-                    //vedere se serve B.unmark()
-                    else{
-                        int score = alphaBeta(true, a, b, depth-1);
-                        HeuValue tmp = new HeuValue(0, 0);
-                        tmp.val = score;
-                        if(depth > transp_depth){   // aggiungo alla table se ho fatto almeno 15 step in depth
-                            table.add2tab(B.getMarkedCells(), tmp);
-                        }
-                        bestScore = min(score, bestScore);
-                        b = min(b, bestScore);
-                        update_matrix(e, false);
-                        B.unmarkCell();
-                        if(b <= a) break;
-                    }
+                if(score < bestScore){   // aggiungo alla table se ho fatto almeno 15 step in depth
+                    best_move.i = e.i;
+                    best_move.j = e.j;
+                    best_move.val = score;
                 }
+
+                bestScore = min(score, bestScore);
+                b = min(b, bestScore);
+    
+                if(b <= a) break;
+            
                 i++;
             }
-
+            if(depth > transp_depth){
+                table.add2tab(B.getMarkedCells(), best_move);
+            }
             return bestScore; 
         }
     }

@@ -1,7 +1,5 @@
 package mnkgame;
 
-import javax.swing.plaf.synth.SynthStyle;
-
 public class TranspositionTable {
 
     Zobrist zobrist;
@@ -9,23 +7,24 @@ public class TranspositionTable {
 
     TranspositionTable(int m, int n){
         zobrist = new Zobrist(m, n);
-        transposition_table = new LinearProbingHashTable((int) Math.pow((m*n),2));
+        transposition_table = new LinearProbingHashTable((int) 3);
+    }
+
+    public void remove_from_tab(MNKCell MC[]){
+        Integer hash = zobrist.hash(MC);
+        transposition_table.remove(hash);
     }
 
     public void add2tab(MNKCell MC[], HeuValue positions){
         int hash = zobrist.hash(MC);
         // System.out.println("aggiungo " + hash);
-        if(transposition_table.isFull()){
-            // transposition_table.makeEmpty();
+        if(transposition_table.isFull())
+            transposition_table.makeEmpty();
             // transposition_table.insert(hash, positions);
-            if(transposition_table.get(hash).val < positions.val){
-                transposition_table.remove(hash);
-                transposition_table.insert(hash, positions);           
-            }
-        }else{
-            transposition_table.insert(hash, positions);
-        }
-
+      
+            
+        
+        transposition_table.insert(hash, positions);
         // System.out.println("aggiungo " + hash);
         // transposition_table.printHashTable();
     }
@@ -33,7 +32,8 @@ public class TranspositionTable {
     public HeuValue get_val(MNKCell MC[]){
         // System.out.println("gud");
         int hash = zobrist.hash(MC);
-        // System.out.println(hash);
+
+        //System.out.println(hash);
         // System.out.println("get " + hash);
         HeuValue bruno = transposition_table.get(hash);
         // if(bruno.val > Integer.MIN_VALUE)

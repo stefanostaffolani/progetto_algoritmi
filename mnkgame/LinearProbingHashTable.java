@@ -10,7 +10,6 @@ import java.util.*;
 // Importing Scanner class as in do-while
 // inputs are entered at run-time when
 // menu is popped to user to perform desired action
-import java.util.Scanner;
  
 // Helper class - LinearProbingHashTable
 class LinearProbingHashTable {
@@ -38,6 +37,8 @@ class LinearProbingHashTable {
         currentSize = 0;
         keys = new Integer[maxSize];
         vals = new HeuValue[maxSize];
+        for(int i = 0; i < maxSize; i++)
+            keys[i] = null;
     }
  
     // Method 2
@@ -59,8 +60,8 @@ class LinearProbingHashTable {
     // Function to check if hash table contains a key
     public boolean contains(Integer key)
     {
-        HeuValue schifo = new HeuValue(0,0);
-        schifo.val = Integer.MIN_VALUE;
+        HeuValue fail = new HeuValue(0,0);
+        fail.val = Integer.MIN_VALUE;
         return get(key).val != Integer.MIN_VALUE;
     }
  
@@ -110,19 +111,20 @@ class LinearProbingHashTable {
     {
         int tmp = hash(key);
         int i = tmp;
+        // System.out.println(tmp + "| key = " + key);
 
         do{
-            // System.out.println(i);
-            if (keys[i] == key)
+            // System.out.println(keys[i] + " | i = " + i);
+            if (keys[i] != null && keys[i].compareTo(key) == 0)
                 return vals[i];
             i = (i + 1) % maxSize;
 
         }while(keys[i] != null && i != tmp);
 
 
-        HeuValue schifo = new HeuValue(0,0);
-        schifo.val = Integer.MIN_VALUE;
-        return schifo;
+        HeuValue fail = new HeuValue(0,0);
+        fail.val = Integer.MIN_VALUE;
+        return fail;
 
     }
  
@@ -135,20 +137,20 @@ class LinearProbingHashTable {
  
         // Find position key and delete
         int i = hash(key);
-        while (!key.equals(keys[i]))
+        while (key.compareTo((keys[i])) != 0)
             i = (i + 1) % maxSize;
         keys[i] = Integer.MIN_VALUE;
-        HeuValue schifo = new HeuValue(0,0);
-        schifo.val = Integer.MIN_VALUE;
-        vals[i] = schifo;
- 
+        HeuValue fail = new HeuValue(0,0);
+        fail.val = Integer.MIN_VALUE;
+        vals[i] = fail;
+        System.out.println("sto rimuovendo cose!!");
         // rehash all keys
-        for (i = (i + 1) % maxSize; keys[i] != Integer.MIN_VALUE;
+        for (i = (i + 1) % maxSize; keys[i] != null && keys[i].compareTo(Integer.MIN_VALUE) != 0;
              i = (i + 1) % maxSize) {
             Integer tmp1 = keys[i];
             HeuValue tmp2 = vals[i];
             keys[i] = Integer.MIN_VALUE;
-            vals[i] = schifo;
+            vals[i] = fail;
             currentSize--;
             insert(tmp1, tmp2);
         }

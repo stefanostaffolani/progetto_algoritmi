@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch porcodio",
+            "request": "launch",
+            "mainClass": "mnkgame.porcodio",
+            "projectName": "progetto_algoritmi_6701080f"
+        },
+        {
+            "type": "java",
             "name": "Launch MaxHeap",
             "request": "launch",
             "mainClass": "mnkgame.MaxHeap",
@@ -30,7 +37,7 @@
             "request": "launch",
             "mainClass": "mnkgame.MNKGame",
             "projectName": "progetto_algoritmi_6701080f",
-            "args": "6 6 4 mnkgame.BrunoPlayer"
+            "args": "15 15 5 mnkgame.BrunoPlayer"
         },
         {
             "type": "java",
