@@ -279,15 +279,15 @@ public class BrunoPlayer implements MNKPlayer{
             int bestScore = Integer.MIN_VALUE;
             while(i <= iter_pruning && max_heap.last >= 1){
 
-                HeuValue e = max_heap.extract_max();
+                HeuValue e = max_heap.extract_max();    
                 
-                B.markCell(e.i, e.j);
+                B.markCell(e.i, e.j);                   
                 update_matrix(e, true);
                 int score = alphaBeta(false, a, b, depth-1);
                 update_matrix(e, false);
                 B.unmarkCell();
                 
-                if(score > bestScore){   // aggiungo alla table se ho fatto almeno 15 step in depth
+                if(score > bestScore){   
                     best_move.i = e.i;
                     best_move.j = e.j;
                     best_move.val = score;

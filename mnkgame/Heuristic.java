@@ -85,9 +85,9 @@ public class Heuristic {
 
 			if(cont + 1 == k-2){
 				if(p1 == -1)
-					return 20;
+					return 10;
 				else
-					return -20;
+					return -10;
 			}
 			else if(cont + 1 == k-1){
 				if(p1 == -1)
