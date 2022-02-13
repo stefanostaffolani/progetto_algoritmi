@@ -15,7 +15,7 @@ public class MaxHeap {
         last = 0;
         for(int i = 0; i < m; i++){
             for(int j = 0; j < n; j++){
-                if(matrix[i][j].val != 0 && matrix[i][j].val != -1 && matrix[i][j].val != -2){
+                if(matrix[i][j].val != 0 && matrix[i][j].val != -1 && matrix[i][j].val != -2){   // prendo solo i valori di rank
                     last++;
                     array[last] = new HeuValue(i, j);
                     array[last].val = matrix[i][j].val;

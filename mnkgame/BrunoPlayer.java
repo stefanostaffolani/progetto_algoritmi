@@ -97,10 +97,7 @@ public class BrunoPlayer implements MNKPlayer{
 
         // check if the position has been already evaluated
         HeuValue tab_val = table.get_val(B.getMarkedCells());
-        //System.out.println(table.zobrist.hash(B.getMarkedCells()));
-        // System.out.println(tab_val.val);
         if(tab_val.val > Integer.MIN_VALUE){
-            System.out.println("mi trovi?(1) " + tab_val.val + "\ni = " + tab_val.i + ", j = " + tab_val.j);
             HeuValue tmp = new HeuValue(tab_val.i, tab_val.j);
             table.remove_from_tab(B.getMarkedCells());
             B.markCell(tmp.i, tmp.j);
@@ -123,11 +120,7 @@ public class BrunoPlayer implements MNKPlayer{
                 max_heap.array[i].val = A + Math.abs(B);
             }
         }
-        // ste è intelligente
-        //max_heap.print();
         max_heap.heapify(1);
-        // max_heap.print();
-        // table.transposition_table.printHashTable();
 
         // ciclo di analisi mosse, termina quando termina il tempo per selectCell 
         while((System.currentTimeMillis()-start)/1000.0 <= TIMEOUT*(99.0/100.0) && max_heap.last >= 1){
@@ -242,9 +235,7 @@ public class BrunoPlayer implements MNKPlayer{
         MaxHeap max_heap = new MaxHeap(matrix, m, n);
        
         HeuValue tab_val = table.get_val(B.getMarkedCells());
-        if(tab_val.val > Integer.MIN_VALUE){  //fare prove!!!
-            System.out.println("mi trovi?(3.1) " + tab_val.val + "\ni = " + tab_val.i + ", j = " + tab_val.j);
-            
+        if(tab_val.val > Integer.MIN_VALUE){  //fare prove!!!            
             return tab_val.val;
         }
 

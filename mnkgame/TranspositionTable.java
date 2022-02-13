@@ -15,29 +15,16 @@ public class TranspositionTable {
         transposition_table.remove(hash);
     }
 
-    public void add2tab(MNKCell MC[], HeuValue positions){
+    public void add2tab(MNKCell MC[], HeuValue positions){  //magari fare un test veloce
         int hash = zobrist.hash(MC);
-        // System.out.println("aggiungo " + hash);
         if(transposition_table.isFull())
-            transposition_table.makeEmpty();
-            // transposition_table.insert(hash, positions);
-      
-            
-        
+            transposition_table.makeEmpty();        
         transposition_table.insert(hash, positions);
-        // System.out.println("aggiungo " + hash);
-        // transposition_table.printHashTable();
     }
 
     public HeuValue get_val(MNKCell MC[]){
-        // System.out.println("gud");
         int hash = zobrist.hash(MC);
-
-        //System.out.println(hash);
-        // System.out.println("get " + hash);
         HeuValue bruno = transposition_table.get(hash);
-        // if(bruno.val > Integer.MIN_VALUE)
-        //     System.out.println("bru: " + bruno.val);
         return bruno;
     }
 
