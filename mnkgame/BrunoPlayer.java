@@ -55,17 +55,17 @@ public class BrunoPlayer implements MNKPlayer{
             depth = 15;
         }
         else if(m <= 20 && n <= 20){
-            iter_pruning = 6;
-            depth = 6;
+            iter_pruning = 8;
+            depth = 8;
         }
         else{
-            iter_pruning = 5;
-            depth = 5;
+            iter_pruning = 7;
+            depth = 7;
         }
 
 
         if(depth > 10)
-            transp_depth = depth-5;
+            transp_depth = depth-4;
         else if(depth > 5 && depth <= 10)
             transp_depth = depth-2;
         else if(depth > 3 && depth <= 5)
@@ -235,7 +235,7 @@ public class BrunoPlayer implements MNKPlayer{
         MaxHeap max_heap = new MaxHeap(matrix, m, n);
        
         HeuValue tab_val = table.get_val(B.getMarkedCells());
-        if(tab_val.val > Integer.MIN_VALUE){  //fare prove!!!            
+        if(tab_val.val > Integer.MIN_VALUE){             
             return tab_val.val;
         }
 

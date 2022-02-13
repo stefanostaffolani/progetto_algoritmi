@@ -15,7 +15,7 @@ public class TranspositionTable {
         transposition_table.remove(hash);
     }
 
-    public void add2tab(MNKCell MC[], HeuValue positions){  //magari fare un test veloce
+    public void add2tab(MNKCell MC[], HeuValue positions){ 
         int hash = zobrist.hash(MC);
         if(transposition_table.isFull())
             transposition_table.makeEmpty();        
@@ -24,8 +24,7 @@ public class TranspositionTable {
 
     public HeuValue get_val(MNKCell MC[]){
         int hash = zobrist.hash(MC);
-        HeuValue bruno = transposition_table.get(hash);
-        return bruno;
+        return transposition_table.get(hash);
     }
 
     public int get_size(){

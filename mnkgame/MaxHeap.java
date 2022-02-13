@@ -1,6 +1,5 @@
 package mnkgame;
 
-// Main class
 public class MaxHeap {
 
     HeuValue[] array;
