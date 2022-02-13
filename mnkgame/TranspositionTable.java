@@ -7,7 +7,7 @@ public class TranspositionTable {
 
     TranspositionTable(int m, int n){
         zobrist = new Zobrist(m, n);
-        transposition_table = new LinearProbingHashTable((int) 3);
+        transposition_table = new LinearProbingHashTable((int) Math.pow((m*n),2));
     }
 
     public void remove_from_tab(MNKCell MC[]){
