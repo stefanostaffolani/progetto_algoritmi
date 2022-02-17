@@ -61,9 +61,9 @@ public class Heuristic {
 		
 		if(cont + 1 == k){
 			if(p1 == -1)
-				return 1000000;
+				return 100000;
 			else
-				return -1000000;
+				return -100000;
 		}	
 		
 		// se la mia serie di mosse è estendibile sia destra che a sinistra e arrivo a k-1 ho vinto
