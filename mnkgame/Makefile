@@ -5,7 +5,7 @@ RM = rm
 
 OPTIONS = -cp
 
-MNK = 15 15 5
+MNK = 3 3 3
 
 build: 
 	$(JC) $(OPTIONS) ".." *.java
