@@ -96,13 +96,15 @@ public class BrunoPlayer implements MNKPlayer{
         }
 
         // check if the position has been already evaluated
-        HeuValue tab_val = table.get_val(B.getMarkedCells());
-        if(tab_val.val > Integer.MIN_VALUE){
-            HeuValue tmp = new HeuValue(tab_val.i, tab_val.j);
-            table.remove_from_tab(B.getMarkedCells());
-            B.markCell(tmp.i, tmp.j);
-            return new MNKCell(tab_val.i, tab_val.j);
-        } 
+        if(m != 3 && n != 3){
+            HeuValue tab_val = table.get_val(B.getMarkedCells());
+            if(tab_val.val > Integer.MIN_VALUE){
+                HeuValue tmp = new HeuValue(tab_val.i, tab_val.j);
+                table.remove_from_tab(B.getMarkedCells());
+                B.markCell(tmp.i, tmp.j);
+                return new MNKCell(tab_val.i, tab_val.j);
+            } 
+        }
 
         int score = Integer.MIN_VALUE;
         int bestScore = Integer.MIN_VALUE;
@@ -112,12 +114,14 @@ public class BrunoPlayer implements MNKPlayer{
         MaxHeap max_heap = new MaxHeap(matrix, m, n);
         
         // update the heap values applying heuristics
-        Heuristic heu = new Heuristic(matrix, max_heap, k, n, m, B);
-        for(int i = 1; i < max_heap.last+1; i++){
-            if(max_heap.array[i].val != 0 && max_heap.array[i].val != -1 && max_heap.array[i].val != -2){
-                int A = heu.eval_the_single_pos(max_heap.array[i], -1);
-                int B = heu.eval_the_single_pos(max_heap.array[i], -2);
-                max_heap.array[i].val = A + Math.abs(B);
+        if(m != 3 && n != 3){
+            Heuristic heu = new Heuristic(matrix, max_heap, k, n, m, B);
+            for(int i = 1; i < max_heap.last+1; i++){
+                if(max_heap.array[i].val != 0 && max_heap.array[i].val != -1 && max_heap.array[i].val != -2){
+                    int A = heu.eval_the_single_pos(max_heap.array[i], -1);
+                    int B = heu.eval_the_single_pos(max_heap.array[i], -2);
+                    max_heap.array[i].val = A + Math.abs(B);
+                }
             }
         }
         max_heap.heapify(1);
@@ -234,17 +238,21 @@ public class BrunoPlayer implements MNKPlayer{
         MNKCell c = MC[MC.length-1];
         MaxHeap max_heap = new MaxHeap(matrix, m, n);
        
-        HeuValue tab_val = table.get_val(B.getMarkedCells());
-        if(tab_val.val > Integer.MIN_VALUE){             
-            return tab_val.val;
+        if(m != 3 && n != 3){
+            HeuValue tab_val = table.get_val(B.getMarkedCells());
+            if(tab_val.val > Integer.MIN_VALUE){             
+                return tab_val.val;
+            }
         }
 
-        Heuristic heu = new Heuristic(matrix, max_heap, k, n, m, B);
-        for(int i = 1; i < max_heap.last+1; i++){
-            if(max_heap.array[i].val != 0 && max_heap.array[i].val != -1 && max_heap.array[i].val != -2){
-                int A = heu.eval_the_single_pos(max_heap.array[i], -1);
-                int B = heu.eval_the_single_pos(max_heap.array[i], -2);
-                max_heap.array[i].val = A + Math.abs(B);
+        if(m != 3 && n != 3){
+            Heuristic heu = new Heuristic(matrix, max_heap, k, n, m, B);
+            for(int i = 1; i < max_heap.last+1; i++){
+                if(max_heap.array[i].val != 0 && max_heap.array[i].val != -1 && max_heap.array[i].val != -2){
+                    int A = heu.eval_the_single_pos(max_heap.array[i], -1);
+                    int B = heu.eval_the_single_pos(max_heap.array[i], -2);
+                    max_heap.array[i].val = A + Math.abs(B);
+                }
             }
         }
         max_heap.heapify(1);
@@ -267,9 +275,11 @@ public class BrunoPlayer implements MNKPlayer{
         
 
         // if it runs out of time or depth is 0 return 0
-        if((System.currentTimeMillis()-start)/1000.0 > TIMEOUT*(99.0/100.0) || depth == 0) {
-            Heuristic heu_board = new Heuristic(matrix, max_heap, k, n, m, B);
-            return heu_board.evaluate(isMaximising);
+        if(m != 3 && n != 3){
+            if((System.currentTimeMillis()-start)/1000.0 > TIMEOUT*(99.0/100.0) || depth == 0) {
+                Heuristic heu_board = new Heuristic(matrix, max_heap, k, n, m, B);
+                return heu_board.evaluate(isMaximising);
+            }
         }
         
         int i = 1;
